@@ -1,5 +1,21 @@
 import { useEffect, useRef } from 'react'
-import { ArrowRight, CheckCircle, Star } from 'lucide-react'
+import {
+  ArrowRight,
+  BarChart3,
+  BrainCircuit,
+  Braces,
+  CheckCircle,
+  Cloud,
+  Code2,
+  Database,
+  Globe2,
+  Layers,
+  Palette,
+  Server,
+  Smartphone,
+  Star,
+  Terminal,
+} from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import './AdvantekHomeOne.css'
@@ -14,6 +30,32 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
   const heroRef = useRef<HTMLDivElement>(null)
   const aboutRef = useRef<HTMLDivElement>(null)
   const servicesRef = useRef<HTMLDivElement>(null)
+  const technologies = [
+    { name: 'React', category: 'Frontend', icon: Code2 },
+    { name: 'Angular', category: 'Frontend', icon: Code2 },
+    { name: 'Vue.js', category: 'Frontend', icon: Code2 },
+    { name: 'Next.js', category: 'Web', icon: Layers },
+    { name: 'TypeScript', category: 'Frontend', icon: Braces },
+    { name: 'Tailwind CSS', category: 'Frontend', icon: Palette },
+    { name: 'Node.js', category: 'Backend', icon: Server },
+    { name: 'Express.js', category: 'Backend', icon: Server },
+    { name: 'Django', category: 'Backend', icon: Server },
+    { name: 'Java', category: 'Backend', icon: Terminal },
+    { name: 'Python', category: 'Data Science', icon: Terminal },
+    { name: 'TensorFlow', category: 'Data Science', icon: BrainCircuit },
+    { name: 'Power BI', category: 'Data Science', icon: BarChart3 },
+    { name: 'PostgreSQL', category: 'Backend', icon: Database },
+    { name: 'MongoDB', category: 'Backend', icon: Database },
+    { name: 'AWS', category: 'Cloud', icon: Cloud },
+    { name: 'Docker', category: 'Cloud', icon: Cloud },
+    { name: 'React Native', category: 'Mobile', icon: Smartphone },
+    { name: 'Flutter', category: 'Mobile', icon: Smartphone },
+    { name: 'Kotlin', category: 'Mobile', icon: Smartphone },
+    { name: 'Swift', category: 'Mobile', icon: Smartphone },
+    { name: 'HTML & CSS', category: 'Web', icon: Globe2 },
+    { name: 'Figma', category: 'Design', icon: Palette },
+    { name: 'Analytics', category: 'Data Science', icon: BarChart3 },
+  ]
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -165,13 +207,31 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
       {/* Partners */}
       <section className="adv-partners">
         <div className="adv-partners-container">
-          <span className="adv-partners-label">Trusted partners :</span>
-          <div className="adv-partners-logos">
-            {['Logo 1', 'Logo 2', 'Logo 3', 'Logo 4'].map((logo, i) => (
-              <div key={i} className="adv-partner-logo">
-                <div className="adv-partner-placeholder">{logo}</div>
-              </div>
-            ))}
+          <div className="adv-partners-heading">
+            <span className="adv-partners-label">Technologies we work with</span>
+            <span className="adv-partners-caption">Web, mobile, data science & more</span>
+          </div>
+          <div className="adv-partners-marquee" aria-label="Technologies we work with">
+            <div className="adv-partners-track">
+              {[...technologies, ...technologies].map((technology, i) => {
+                const TechnologyIcon = technology.icon
+                return (
+                  <div
+                    key={`${technology.name}-${i}`}
+                    className="adv-partner-logo"
+                    aria-hidden={i >= technologies.length}
+                  >
+                    <span className="adv-partner-icon">
+                      <TechnologyIcon size={20} strokeWidth={2.2} />
+                    </span>
+                    <span className="adv-partner-info">
+                      <span className="adv-partner-name">{technology.name}</span>
+                      <span className="adv-partner-category">{technology.category}</span>
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       </section>

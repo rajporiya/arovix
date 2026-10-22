@@ -285,7 +285,7 @@
 }
 
 .adv-partners-container {
-  max-width: 1400px;
+  max-width: 80rem;
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;
@@ -293,34 +293,101 @@
   gap: 3rem;
 }
 
-.adv-partners-label {
-  color: var(--adv-text-tertiary);
-  font-size: 0.875rem;
-  white-space: nowrap;
+.adv-partners-heading {
+  flex: 0 0 11rem;
 }
 
-.adv-partners-logos {
+.adv-partners-label {
+  display: block;
+  color: var(--adv-text);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.adv-partners-caption {
+  display: block;
+  color: var(--adv-text-tertiary);
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin-top: 0.35rem;
+}
+
+.adv-partners-marquee {
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  flex: 1;
+  mask-image: linear-gradient(to right, transparent, black 4%, black 96%, transparent);
+}
+
+.adv-partners-track {
   display: flex;
   align-items: center;
-  gap: 3rem;
-  flex: 1;
-  justify-content: space-around;
-  flex-wrap: wrap;
+  width: max-content;
+  animation: adv-technologies-scroll 38s linear infinite;
+}
+
+.adv-partners-marquee:hover .adv-partners-track,
+.adv-partners-marquee:focus-within .adv-partners-track {
+  animation-play-state: paused;
 }
 
 .adv-partner-logo {
-  opacity: 0.5;
-  transition: opacity 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-width: 9.5rem;
+  margin-right: 2.25rem;
+  opacity: 0.72;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .adv-partner-logo:hover {
-  opacity: 0.8;
+  opacity: 1;
+  transform: translateY(-2px);
 }
 
-.adv-partner-placeholder {
-  color: var(--adv-text-secondary);
-  font-size: 1rem;
-  font-weight: 600;
+.adv-partner-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--adv-primary);
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: 0.7rem;
+}
+
+.adv-partner-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.adv-partner-name {
+  color: var(--adv-text);
+  font-size: 0.875rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.adv-partner-category {
+  color: var(--adv-text-tertiary);
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+@keyframes adv-technologies-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 /* About */
@@ -629,6 +696,12 @@
   .adv-partners-container {
     flex-direction: column;
     gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  .adv-partners-heading {
+    flex-basis: auto;
+    text-align: center;
   }
 }
 
