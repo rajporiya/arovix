@@ -107,7 +107,8 @@ admin.put('/about', validate(z.object({ body: contentBody, params: z.object({}),
 }))
 admin.get('/contact', validate(querySchema), asyncHandler(async (request, response) => {
   const { page, limit } = request.query as unknown as { page: number; limit: number }
-  const filter = request.query.status ? { status: request.query.status } : {}
+  const status = typeof request.query.status === 'string' ? request.query.status : undefined
+  const filter: { status?: 'new' | 'in_progress' | 'resolved' } = status === 'new' || status === 'in_progress' || status === 'resolved' ? { status } : {}
   const [items, total] = await Promise.all([Contact.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(), Contact.countDocuments(filter)])
   sendSuccess(response, 200, 'Contact inquiries retrieved', items, { page, limit, total, totalPages: Math.ceil(total / limit) })
 }))

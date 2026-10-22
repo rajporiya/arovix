@@ -1,0 +1,6 @@
+process.env.NODE_ENV = 'test'
+process.env.MONGODB_URI = 'mongodb://127.0.0.1:27017/arovix-test'
+process.env.REDIS_URL = 'redis://127.0.0.1:6379'
+process.env.JWT_ACCESS_SECRET = 'test-access-secret-that-is-long-enough-123'
+process.env.JWT_REFRESH_SECRET = 'test-refresh-secret-that-is-long-enough-123'
+process.env.COOKIE_SECRET = 'test-cookie-secret-that-is-long-enough-123'
