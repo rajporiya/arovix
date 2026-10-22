@@ -88,42 +88,34 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
         ease: 'power3.out'
       })
 
-      // About section
-      gsap.from('.adv-about-content > *', {
-        scrollTrigger: {
-          trigger: aboutRef.current,
-          start: 'top 80%',
-        },
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out'
-      })
-      gsap.from('.adv-about-image', {
-        scrollTrigger: {
-          trigger: aboutRef.current,
-          start: 'top 80%',
-        },
-        opacity: 0,
-        x: 50,
-        duration: 1,
-        ease: 'power3.out'
-      })
+      const scrollRevealSections = [
+        { trigger: aboutRef.current, target: '.adv-about-container' },
+        { trigger: servicesRef.current, target: '.adv-services-container' },
+        { trigger: '.adv-cta-section', target: '.adv-cta-container' },
+      ]
 
-      // Services
-      gsap.from('.adv-service-card', {
-        scrollTrigger: {
-          trigger: servicesRef.current,
-          start: 'top 75%',
-        },
-        opacity: 0,
-        y: 40,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power3.out'
+      scrollRevealSections.forEach(({ trigger, target }) => {
+        if (!trigger) return
+
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger,
+            start: 'top 90%',
+            end: 'bottom 10%',
+            scrub: true,
+          },
+        })
+
+        timeline
+          .fromTo(
+            target,
+            { opacity: 0, y: 80 },
+            { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' },
+          )
+          .to(target, { opacity: 1, y: 0, duration: 0.4 })
+          .to(target, { opacity: 0, y: -80, duration: 0.3, ease: 'power2.in' })
       })
-    }, heroRef)
+    })
 
     return () => ctx.revert()
   }, [])

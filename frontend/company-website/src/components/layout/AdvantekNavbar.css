@@ -113,22 +113,43 @@
 .adv-cta-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, var(--adv-primary) 0%, var(--adv-accent) 100%);
-  border: none;
-  color: white;
-  font-size: 0.9375rem;
+  gap: 1rem;
+  justify-content: space-between;
+  background: #f0eaff;
+  border: 1.5px solid #48506f;
+  color: #303756;
+  font-size: 0.875rem;
   font-weight: 600;
-  padding: 0.625rem 1.25rem;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+  padding: 0.38rem 0.38rem 0.38rem 1.45rem;
+  border-radius: 999px;
+  transition: background 0.3s, color 0.3s, transform 0.3s, box-shadow 0.3s;
+  box-shadow: none;
   flex-shrink: 0;
 }
 
-.adv-cta-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 30px rgba(99, 102, 241, 0.4);
+.adv-cta-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1.5px solid #48506f;
+  border-radius: 50%;
+  font-weight: 400;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.adv-cta-btn:hover,
+.adv-cta-btn:focus-visible {
+  color: #fff;
+  outline: none;
+  box-shadow: 0 10px 24px rgba(91, 81, 177, 0.25);
+}
+
+.adv-cta-btn:hover .adv-cta-icon,
+.adv-cta-btn:focus-visible .adv-cta-icon {
+  border-color: #fff;
+  transform: rotate(-35deg);
 }
 
 .adv-mobile-toggle {
