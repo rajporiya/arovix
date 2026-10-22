@@ -18,6 +18,8 @@ import {
 } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import landingPageImage from '../../assets/bgLandingPage.png'
+import CursorGrid from '../../components/shared/CursorGrid'
 import './AdvantekHomeOne.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -151,11 +153,25 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
     <div className="adv-home">
       {/* Hero Section */}
       <section className="adv-hero" ref={heroRef}>
-        <div className="adv-hero-bg">
+        <CursorGrid
+          className="adv-hero-bg"
+          cellSize={60}
+          color="#6366f1"
+          gridColor="rgba(99, 102, 241, 0.1)"
+          highlight="area"
+          gridStyle="lines"
+          radius={140}
+          holdTime={400}
+          fadeDuration={800}
+          fillOpacity={0.06}
+          gridOpacity={0.08}
+          spotlight={0.6}
+          clickPulse
+        >
           <div className="adv-hero-grid"></div>
           <div className="adv-hero-glow adv-hero-glow-1"></div>
           <div className="adv-hero-glow adv-hero-glow-2"></div>
-        </div>
+        </CursorGrid>
         <div className="adv-hero-container">
           <div className="adv-hero-content">
             <div className="adv-hero-badge">
@@ -185,7 +201,7 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
           </div>
           <div className="adv-hero-image-wrapper">
             <div className="adv-hero-image">
-              <img src="https://cdn.prod.website-files.com/66e941ecfdc808e4ad48ba70/66e941ecfdc808e4ad48bd5c_Banner%20Girl.webp" alt="IT Solutions" />
+              <img src={landingPageImage} alt="Modern laptop displaying software development technology" />
             </div>
             <div className="adv-hero-floating-card adv-floating-card-1">
               <div className="adv-floating-icon">✓</div>

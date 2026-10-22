@@ -15,9 +15,11 @@ const navItems = [
   { label: 'Contact', href: '/contact' },
 ]
 
-export function AdvantekNavbar({ navigate }: NavProps) {
+export function AdvantekNavbar({ path, navigate }: NavProps) {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href))
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,7 +70,7 @@ export function AdvantekNavbar({ navigate }: NavProps) {
           {navItems.map((item) => (
             <div key={item.label} className="adv-nav-item">
               <button
-                className="adv-nav-link"
+                className={`adv-nav-link ${isActive(item.href) ? 'active' : ''}`}
                 onClick={(e) => handleNavClick(e, item.href)}
                 type="button"
               >
@@ -104,7 +106,7 @@ export function AdvantekNavbar({ navigate }: NavProps) {
           {navItems.map((item) => (
             <div key={item.label} className="adv-mobile-item">
               <button
-                className="adv-mobile-link"
+                className={`adv-mobile-link ${isActive(item.href) ? 'active' : ''}`}
                 onClick={(e) => handleNavClick(e, item.href)}
                 type="button"
               >
