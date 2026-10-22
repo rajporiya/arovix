@@ -561,6 +561,73 @@ h2 i {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
+  /* Advantek-style public navigation. */
+  .header {
+    background: linear-gradient(100deg, rgba(239, 232, 255, 0.92), rgba(255, 247, 251, 0.9));
+    box-shadow: none;
+  }
+  .brand {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.06em;
+  }
+  .brand-mark {
+    background: linear-gradient(145deg, #8d65f3, #6748d6);
+    border-radius: 50%;
+    clip-path: none;
+    font-size: 1.2rem !important;
+    height: 2.7rem;
+    width: 2.7rem;
+  }
+  .brand-accent {
+    color: #282d59;
+    font-weight: 500;
+  }
+  .nav {
+    background: transparent;
+    border: 0;
+    gap: 1.7rem;
+  }
+  .nav a {
+    background: transparent !important;
+    border-radius: 0;
+    color: #172451;
+    font-size: 0.82rem;
+    padding: 0.7rem 0;
+    position: relative;
+  }
+  .nav a:hover,
+  .nav a.current {
+    color: #6849ce;
+  }
+  .nav a.current::after {
+    background: #6849ce;
+    border-radius: 1rem;
+    bottom: 0.15rem;
+    content: "";
+    height: 2px;
+    left: 0;
+    position: absolute;
+    right: 0;
+  }
+  .register {
+    background: transparent;
+    border-color: #182552;
+    color: #172451;
+    min-width: 13rem;
+  }
+  .register b {
+    border-color: #182552;
+  }
+  .register:hover {
+    background: #e8ddff;
+    border-color: #6849ce;
+    color: #6849ce;
+  }
+  .register:hover b {
+    border-color: #6849ce;
+  }
 }
 
 /* The public landing page uses a light editorial navigation treatment. */

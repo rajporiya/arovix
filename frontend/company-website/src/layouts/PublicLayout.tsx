@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
-import { Navbar } from '../components/layout/Navbar'
-import { Footer } from '../components/layout/Footer'
+import { AdvantekNavbar } from '../components/layout/AdvantekNavbar'
+import { AdvantekFooter } from '../components/layout/AdvantekFooter'
 
 export function PublicLayout({ path, navigate, children }: { path: string; navigate: (path: string) => void; children: ReactNode }) {
-  return <><Navbar path={path} navigate={navigate} /><main>{children}</main><Footer navigate={navigate} /></>
+  return <><AdvantekNavbar path={path} navigate={navigate} /><main style={{ paddingTop: '70px' }}>{children}</main><AdvantekFooter navigate={navigate} /></>
 }
