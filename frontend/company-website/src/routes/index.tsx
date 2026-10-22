@@ -21,6 +21,7 @@ export function Router({ path, navigate }: { path: string; navigate: (path: stri
   if (path === '/contact') return <ContactPage />
   if (path === '/login') return <LoginPage navigate={navigate} />
   if (path === '/admin') return <PageShell title={<>Control<br /><i>the detail.</i></>} intro="The admin workspace connects to the existing protected backend." />
+  if (path === '/pricing') return <PageShell title={<>A clear path<br /><i>forward.</i></>} intro="Every engagement is shaped around the problem, the team, and the outcome. Talk to us for a considered proposal." />
   if (path === '/blog') return <PageShell title={<>Thinking out<br /><i>loud.</i></>} intro="Insights publishing is not available in the current backend yet." />
   if (path === '/faq') return <PageShell title={<>Questions,<br /><i>answered.</i></>} intro="The studio FAQ is being prepared. Send us your question directly." />
   if (path === '/privacy' || path === '/terms') return <PageShell title={path === '/privacy' ? <>Privacy<br /><i>policy.</i></> : <>Terms and<br /><i>conditions.</i></>} intro="Legal content must be reviewed and supplied by the company before publication." />

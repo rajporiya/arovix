@@ -1,4 +1,12 @@
 {
+  "name": "arovix-frontend",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix company-website run dev",
+    "build": "npm --prefix company-website run build",
+    "lint": "npm --prefix company-website run lint",
+    "preview": "npm --prefix company-website run preview"
+  },
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@react-three/drei": "^10.7.9",
