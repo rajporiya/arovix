@@ -9,6 +9,8 @@ import { asyncHandler } from '../utils/async-handler.js'
 import { sendSuccess } from '../utils/api-response.js'
 import { AppError } from '../utils/app-error.js'
 import { getCache, setCache, deleteCache } from '../utils/cache.js'
+import { logger } from '../config/logger.js'
+import { confirmCareer, confirmContact, notifyCareer, notifyContact } from '../modules/email/email.service.js'
 
 const kinds = ['service', 'employee', 'project', 'career', 'about'] as const
 const kindSchema = z.enum(kinds)
@@ -36,6 +38,15 @@ const statusValidation = z.object({ body: z.object({ status: z.string().min(1).m
 
 const router = Router()
 
+async function logEmailFailures(recordId: string, operations: Promise<void>[]): Promise<void> {
+  const results = await Promise.allSettled(operations)
+  for (const result of results) {
+    if (result.status === 'rejected') {
+      logger.warn({ operation: 'email_notification', recordId, reason: result.reason instanceof Error ? result.reason.message : 'Provider request failed' }, 'Email notification was not sent')
+    }
+  }
+}
+
 async function listContent(kind: typeof kinds[number], page: number, limit: number, search?: string, admin = false) {
   const filter: Record<string, unknown> = { kind, ...(admin ? {} : { published: true, archived: false }) }
   if (search) filter.$or = [{ title: { $regex: search, $options: 'i' } }, { summary: { $regex: search, $options: 'i' } }]
@@ -60,13 +71,23 @@ for (const kind of kinds) {
 
 router.post('/contact', publicRateLimit, validate(contactValidation), asyncHandler(async (request, response) => {
   const record = await Contact.create(request.body)
+  const submittedAt = record.createdAt.toISOString()
+  await logEmailFailures(record.id, [
+    notifyContact({ ...request.body, submittedAt }),
+    confirmContact({ ...request.body, submittedAt }),
+  ])
   sendSuccess(response, 201, 'Contact inquiry submitted', { id: record.id })
 }))
 router.post('/applications', publicRateLimit, validate(applicationValidation), asyncHandler(async (request, response) => {
   const body = request.body as { careerId: string }
-  const career = await Content.findOne({ _id: body.careerId, kind: 'career', published: true, archived: false }).select('_id')
+  const career = await Content.findOne({ _id: body.careerId, kind: 'career', published: true, archived: false }).select('_id title')
   if (!career) throw new AppError(404, 'Job opening not found')
   const record = await Application.create(body)
+  const submittedAt = record.createdAt.toISOString()
+  await logEmailFailures(record.id, [
+    notifyCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt }),
+    confirmCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt }),
+  ])
   sendSuccess(response, 201, 'Application submitted', { id: record.id })
 }))
 

@@ -13,6 +13,14 @@ const schema = z.object({
   REFRESH_TOKEN_TTL: z.string().default('7d'),
   COOKIE_SECRET: z.string().min(32),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
+  EMAILJS_SERVICE_ID: z.string().min(1).optional(),
+  EMAILJS_API_KEY: z.string().min(1).optional(),
+  EMAILJS_PRIVATE_KEY: z.string().min(1).optional(),
+  EMAILJS_CONTACT_TEMPLATE_ID: z.string().min(1).optional(),
+  EMAILJS_CAREER_TEMPLATE_ID: z.string().min(1).optional(),
+  EMAILJS_CONTACT_CONFIRMATION_TEMPLATE_ID: z.string().min(1).optional(),
+  EMAILJS_CAREER_CONFIRMATION_TEMPLATE_ID: z.string().min(1).optional(),
+  ADMIN_NOTIFICATION_EMAIL: z.string().email().optional(),
 })
 
 const result = schema.safeParse(process.env)
