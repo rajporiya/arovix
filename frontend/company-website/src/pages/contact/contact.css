@@ -1,0 +1,18 @@
+.contact-form { animation: contact-form-in .65s cubic-bezier(.22,1,.36,1) both; }
+.contact-form label { color: #7d7e91; position: relative; transition: color .25s, transform .25s; }
+.contact-form label::after { background: linear-gradient(90deg, #7770d4, #77c99b); bottom: 0; content: ''; height: 2px; left: 0; position: absolute; transform: scaleX(0); transform-origin: left; transition: transform .35s ease; width: 100%; }
+.contact-form label:focus-within, .contact-form label.field-filled { color: #6359b9; transform: translateX(3px); }
+.contact-form label:focus-within::after { transform: scaleX(1); }
+.contact-form input, .contact-form textarea { transition: border-color .25s, box-shadow .25s, padding .25s; }
+.contact-form input:focus, .contact-form textarea:focus { border-color: #8177da; box-shadow: 0 8px 20px rgba(112,103,197,.1); padding-left: .7rem; }
+.contact-submit { align-items: center; background: #f0eaff; border: 1.5px solid #48506f; border-radius: 999px; color: #303756; cursor: pointer; display: flex; font-size: .82rem; gap: 1rem; justify-content: space-between; min-width: 13rem; padding: .38rem .38rem .38rem 1.45rem; transition: background .3s, color .3s, transform .3s, box-shadow .3s; }
+.contact-submit b { align-items: center; border: 1.5px solid #48506f; border-radius: 50%; display: flex; font-size: 1.05rem; font-weight: 400; height: 2.25rem; justify-content: center; width: 2.25rem; }
+.contact-submit:hover:not(:disabled), .contact-submit:focus-visible { background: #6c62c9; box-shadow: 0 10px 24px rgba(91,81,177,.25); color: #fff; outline: none; transform: translateY(-3px); }
+.contact-submit:hover:not(:disabled) b, .contact-submit:focus-visible b { border-color: #fff; transform: rotate(-35deg); }
+.contact-submit b { transition: border-color .3s, transform .3s; }
+.contact-submit:disabled { cursor: wait; opacity: .75; }
+.contact-submit.is-sending b { animation: contact-dots 1s ease-in-out infinite; }
+.form-success { color: #4b9e73 !important; }.form-error { color: #b25b69 !important; }
+@keyframes contact-form-in { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
+@keyframes contact-dots { 0%, 100% { transform: scale(.85); } 50% { transform: scale(1.1); } }
+@media (prefers-reduced-motion: reduce) { .contact-form, .contact-submit, .contact-submit b { animation: none; transition: none; } }
