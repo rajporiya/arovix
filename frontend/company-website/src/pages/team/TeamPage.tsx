@@ -1,0 +1,2 @@
+import { Listing } from '../../components/shared/Listing'
+export function TeamPage({ navigate }: { navigate: (path: string) => void }) { return <Listing endpoint="employees" navigate={navigate} title={<>People make<br /><i>the difference.</i></>} intro="A close-knit team of designers, strategists, and engineers. Real people, thoughtful work." empty="Team profiles will appear here when published." /> }

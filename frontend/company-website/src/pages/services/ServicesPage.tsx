@@ -1,0 +1,2 @@
+import { Listing } from '../../components/shared/Listing'
+export function ServicesPage({ navigate }: { navigate: (path: string) => void }) { return <Listing endpoint="services" navigate={navigate} title={<>Capabilities for<br /><i>what's next.</i></>} intro="A focused set of capabilities for turning good ideas into durable digital experiences." empty="No published services yet. The CMS is ready for your first capability." /> }
