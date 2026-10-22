@@ -10,7 +10,7 @@ interface NavProps {
 const navItems = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Pages', href: '/services' },
+  { label: 'Services', href: '/services' },
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ]

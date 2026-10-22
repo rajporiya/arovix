@@ -293,26 +293,6 @@
   gap: 3rem;
 }
 
-.adv-partners-heading {
-  flex: 0 0 11rem;
-}
-
-.adv-partners-label {
-  display: block;
-  color: var(--adv-text);
-  font-size: 0.9375rem;
-  font-weight: 700;
-  line-height: 1.4;
-}
-
-.adv-partners-caption {
-  display: block;
-  color: var(--adv-text-tertiary);
-  font-size: 0.75rem;
-  line-height: 1.5;
-  margin-top: 0.35rem;
-}
-
 .adv-partners-marquee {
   min-width: 0;
   overflow: hidden;
@@ -359,6 +339,12 @@
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid rgba(99, 102, 241, 0.2);
   border-radius: 0.7rem;
+}
+
+.adv-partner-icon img {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: block;
 }
 
 .adv-partner-info {
@@ -697,11 +683,6 @@
     flex-direction: column;
     gap: 1.5rem;
     align-items: stretch;
-  }
-
-  .adv-partners-heading {
-    flex-basis: auto;
-    text-align: center;
   }
 }
 

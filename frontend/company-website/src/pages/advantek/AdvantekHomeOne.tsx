@@ -1,21 +1,5 @@
 import { useEffect, useRef } from 'react'
-import {
-  ArrowRight,
-  BarChart3,
-  BrainCircuit,
-  Braces,
-  CheckCircle,
-  Cloud,
-  Code2,
-  Database,
-  Globe2,
-  Layers,
-  Palette,
-  Server,
-  Smartphone,
-  Star,
-  Terminal,
-} from 'lucide-react'
+import { ArrowRight, CheckCircle } from 'lucide-react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import landingPageImage from '../../assets/bgLandingPage.png'
@@ -33,30 +17,30 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
   const aboutRef = useRef<HTMLDivElement>(null)
   const servicesRef = useRef<HTMLDivElement>(null)
   const technologies = [
-    { name: 'React', category: 'Frontend', icon: Code2 },
-    { name: 'Angular', category: 'Frontend', icon: Code2 },
-    { name: 'Vue.js', category: 'Frontend', icon: Code2 },
-    { name: 'Next.js', category: 'Web', icon: Layers },
-    { name: 'TypeScript', category: 'Frontend', icon: Braces },
-    { name: 'Tailwind CSS', category: 'Frontend', icon: Palette },
-    { name: 'Node.js', category: 'Backend', icon: Server },
-    { name: 'Express.js', category: 'Backend', icon: Server },
-    { name: 'Django', category: 'Backend', icon: Server },
-    { name: 'Java', category: 'Backend', icon: Terminal },
-    { name: 'Python', category: 'Data Science', icon: Terminal },
-    { name: 'TensorFlow', category: 'Data Science', icon: BrainCircuit },
-    { name: 'Power BI', category: 'Data Science', icon: BarChart3 },
-    { name: 'PostgreSQL', category: 'Backend', icon: Database },
-    { name: 'MongoDB', category: 'Backend', icon: Database },
-    { name: 'AWS', category: 'Cloud', icon: Cloud },
-    { name: 'Docker', category: 'Cloud', icon: Cloud },
-    { name: 'React Native', category: 'Mobile', icon: Smartphone },
-    { name: 'Flutter', category: 'Mobile', icon: Smartphone },
-    { name: 'Kotlin', category: 'Mobile', icon: Smartphone },
-    { name: 'Swift', category: 'Mobile', icon: Smartphone },
-    { name: 'HTML & CSS', category: 'Web', icon: Globe2 },
-    { name: 'Figma', category: 'Design', icon: Palette },
-    { name: 'Analytics', category: 'Data Science', icon: BarChart3 },
+    { name: 'React', category: 'Frontend', logo: 'react', color: '61DAFB' },
+    { name: 'Angular', category: 'Frontend', logo: 'angular', color: 'DD0031' },
+    { name: 'Vue.js', category: 'Frontend', logo: 'vuedotjs', color: '4FC08D' },
+    { name: 'Next.js', category: 'Web', logo: 'nextdotjs', color: '111111' },
+    { name: 'TypeScript', category: 'Frontend', logo: 'typescript', color: '3178C6' },
+    { name: 'Tailwind CSS', category: 'Frontend', logo: 'tailwindcss', color: '06B6D4' },
+    { name: 'Node.js', category: 'Backend', logo: 'nodedotjs', color: '5FA04E' },
+    { name: 'Express.js', category: 'Backend', logo: 'express', color: '111111' },
+    { name: 'Django', category: 'Backend', logo: 'django', color: '092E20' },
+    { name: 'Java', category: 'Backend', logo: 'openjdk', color: '437291' },
+    { name: 'Python', category: 'Data Science', logo: 'python', color: '3776AB' },
+    { name: 'TensorFlow', category: 'Data Science', logo: 'tensorflow', color: 'FF6F00' },
+    { name: 'Power BI', category: 'Data Science', logo: 'powerbi', color: 'F2C811' },
+    { name: 'PostgreSQL', category: 'Backend', logo: 'postgresql', color: '4169E1' },
+    { name: 'MongoDB', category: 'Backend', logo: 'mongodb', color: '47A248' },
+    { name: 'AWS', category: 'Cloud', logo: 'amazonaws', color: '232F3E' },
+    { name: 'Docker', category: 'Cloud', logo: 'docker', color: '2496ED' },
+    { name: 'React Native', category: 'Mobile', logo: 'react', color: '61DAFB' },
+    { name: 'Flutter', category: 'Mobile', logo: 'flutter', color: '02569B' },
+    { name: 'Kotlin', category: 'Mobile', logo: 'kotlin', color: '7F52FF' },
+    { name: 'Swift', category: 'Mobile', logo: 'swift', color: 'F05138' },
+    { name: 'HTML & CSS', category: 'Web', logo: 'html5', color: 'E34F26' },
+    { name: 'Figma', category: 'Design', logo: 'figma', color: 'F24E1E' },
+    { name: 'Analytics', category: 'Data Science', logo: 'googleanalytics', color: 'E37400' },
   ]
 
   useEffect(() => {
@@ -203,19 +187,6 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
             <div className="adv-hero-image">
               <img src={landingPageImage} alt="Modern laptop displaying software development technology" />
             </div>
-            <div className="adv-hero-floating-card adv-floating-card-1">
-              <div className="adv-floating-icon">✓</div>
-              <div>
-                <div className="adv-floating-title">IT Solution</div>
-                <div className="adv-floating-sub">Best Solution</div>
-              </div>
-            </div>
-            <div className="adv-hero-floating-card adv-floating-card-2">
-              <div className="adv-floating-stars">
-                {[...Array(5)].map((_, i) => <Star key={i} size={12} fill="#f59e0b" color="#f59e0b" />)}
-              </div>
-              <div className="adv-floating-review">4.9/5 Client Review</div>
-            </div>
           </div>
         </div>
       </section>
@@ -223,14 +194,9 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
       {/* Partners */}
       <section className="adv-partners">
         <div className="adv-partners-container">
-          <div className="adv-partners-heading">
-            <span className="adv-partners-label">Technologies we work with</span>
-            <span className="adv-partners-caption">Web, mobile, data science & more</span>
-          </div>
           <div className="adv-partners-marquee" aria-label="Technologies we work with">
             <div className="adv-partners-track">
               {[...technologies, ...technologies].map((technology, i) => {
-                const TechnologyIcon = technology.icon
                 return (
                   <div
                     key={`${technology.name}-${i}`}
@@ -238,7 +204,11 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
                     aria-hidden={i >= technologies.length}
                   >
                     <span className="adv-partner-icon">
-                      <TechnologyIcon size={20} strokeWidth={2.2} />
+                      <img
+                        src={`https://cdn.simpleicons.org/${technology.logo}/${technology.color}`}
+                        alt=""
+                        loading="lazy"
+                      />
                     </span>
                     <span className="adv-partner-info">
                       <span className="adv-partner-name">{technology.name}</span>
