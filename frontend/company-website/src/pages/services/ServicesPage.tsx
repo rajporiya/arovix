@@ -48,7 +48,7 @@ export function ServicesPage({ navigate }: { navigate: (path: string) => void })
               <h3>{service.title}</h3>
               <p>{service.description}</p>
               <ul>{service.points.map((point) => <li key={point}>{point}</li>)}</ul>
-              <div className="service-tile-bottom"><div>{service.technologies.map((technology) => <span key={technology}>{technology}</span>)}</div><button type="button" onClick={() => navigate(`/services/${service.title.replaceAll(' ', '-')}`)} aria-label={`View ${service.title} details`}>↗</button></div>
+              <div className="service-tile-bottom"><div>{service.technologies.map((technology) => <span key={technology}>{technology}</span>)}</div></div>
             </article>
           ))}
         </div>
