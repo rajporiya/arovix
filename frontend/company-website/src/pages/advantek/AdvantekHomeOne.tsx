@@ -196,11 +196,17 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
                     aria-hidden={i >= technologies.length}
                   >
                     <span className="adv-partner-icon">
-                      <img
-                        src={`https://cdn.simpleicons.org/${technology.logo}/${technology.color}`}
-                        alt=""
-                        loading="lazy"
-                      />
+                      {technology.logo === 'powerbi' || technology.logo === 'amazonaws' ? (
+                        <span className="adv-partner-monogram" aria-hidden="true">
+                          {technology.logo === 'powerbi' ? 'BI' : 'AWS'}
+                        </span>
+                      ) : (
+                        <img
+                          src={`https://cdn.simpleicons.org/${technology.logo}/${technology.color}`}
+                          alt=""
+                          loading="lazy"
+                        />
+                      )}
                     </span>
                     <span className="adv-partner-info">
                       <span className="adv-partner-name">{technology.name}</span>

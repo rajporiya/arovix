@@ -21,7 +21,7 @@ export function AdvantekFooter({ navigate }: FooterProps) {
               <div className="adv-brand-logo">
                 <img src={appLogo} alt="Arovix logo" />
               </div>
-              <span className="adv-footer-brand-name">Advantek</span>
+              <span className="adv-footer-brand-name">Arovix</span>
             </div>
             <p className="adv-footer-desc">
               Empowering businesses with innovative IT solutions and digital transformation services.
@@ -97,7 +97,7 @@ export function AdvantekFooter({ navigate }: FooterProps) {
 
         <div className="adv-footer-bottom">
           <p className="adv-footer-copyright">
-            © 2026 Advantek. Designed by <a href="https://www.radianttemplates.com/" target="_blank" rel="noopener noreferrer">Radiant Templates</a>, Powered by <a href="https://webflow.com" target="_blank" rel="noopener noreferrer">Webflow</a>
+            © 2026 Arovix. Designed by <a href="https://www.radianttemplates.com/" target="_blank" rel="noopener noreferrer">Radiant Templates</a>, Powered by <a href="https://webflow.com" target="_blank" rel="noopener noreferrer">Webflow</a>
           </p>
         </div>
       </div>

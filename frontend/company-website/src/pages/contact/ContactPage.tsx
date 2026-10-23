@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
-import { submitContact } from '../../lib/api'
+import { ApiRequestError, submitContact } from '../../lib/api'
 import { PageShell } from '../../components/shared/PageShell'
 import './contact.css'
 
@@ -31,8 +31,10 @@ export function ContactPage() {
       await submitContact(values)
       setValues(initialValues)
       setStatus('Thanks — your message was submitted successfully.')
-    } catch {
-      setStatus('We could not send that right now. Please try again.')
+    } catch (error) {
+      setStatus(error instanceof ApiRequestError && error.status === undefined
+        ? 'The contact service could not be reached. Please try again later or email us directly.'
+        : 'We could not submit your inquiry. Please try again later or email us directly.')
     } finally {
       setSending(false)
     }

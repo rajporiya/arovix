@@ -15,7 +15,7 @@ export type CareerEmailData = {
 }
 
 export class EmailProviderError extends Error {
-  constructor(message: string) {
+  constructor(message: string, readonly providerCode?: string, readonly responseCode?: number) {
     super(message)
     this.name = 'EmailProviderError'
   }

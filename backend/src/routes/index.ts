@@ -38,11 +38,18 @@ const statusValidation = z.object({ body: z.object({ status: z.string().min(1).m
 
 const router = Router()
 
-async function logEmailFailures(recordId: string, operations: Promise<void>[]): Promise<void> {
-  const results = await Promise.allSettled(operations)
-  for (const result of results) {
+async function logEmailFailures(recordId: string, operations: [string, Promise<void>][]): Promise<void> {
+  const results = await Promise.allSettled(operations.map(([, operation]) => operation))
+  for (const [index, result] of results.entries()) {
     if (result.status === 'rejected') {
-      logger.warn({ operation: 'email_notification', recordId, reason: result.reason instanceof Error ? result.reason.message : 'Provider request failed' }, 'Email notification was not sent')
+      const error = result.reason
+      logger.warn({
+        operation: operations[index]?.[0] ?? 'email_notification',
+        recordId,
+        reason: error instanceof Error ? error.message : 'Provider request failed',
+        providerCode: typeof error === 'object' && error !== null && 'providerCode' in error ? error.providerCode : undefined,
+        responseCode: typeof error === 'object' && error !== null && 'responseCode' in error ? error.responseCode : undefined,
+      }, 'Email notification was not sent')
     }
   }
 }
@@ -73,8 +80,8 @@ router.post('/contact', publicRateLimit, validate(contactValidation), asyncHandl
   const record = await Contact.create(request.body)
   const submittedAt = record.createdAt.toISOString()
   await logEmailFailures(record.id, [
-    notifyContact({ ...request.body, submittedAt }),
-    confirmContact({ ...request.body, submittedAt }),
+    ['admin_contact_notification', notifyContact({ ...request.body, submittedAt })],
+    ['contact_confirmation', confirmContact({ ...request.body, submittedAt })],
   ])
   sendSuccess(response, 201, 'Contact inquiry submitted', { id: record.id })
 }))
@@ -85,8 +92,8 @@ router.post('/applications', publicRateLimit, validate(applicationValidation), a
   const record = await Application.create(body)
   const submittedAt = record.createdAt.toISOString()
   await logEmailFailures(record.id, [
-    notifyCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt }),
-    confirmCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt }),
+    ['admin_career_notification', notifyCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt })],
+    ['career_confirmation', confirmCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt })],
   ])
   sendSuccess(response, 201, 'Application submitted', { id: record.id })
 }))

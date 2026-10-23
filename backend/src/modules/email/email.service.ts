@@ -29,17 +29,19 @@ function rowsHtml(rows: MailRow[]): string {
   const cells = rows
     .map(
       ([label, value]) =>
-        `<tr><td style="padding:6px 12px 6px 0;color:#6b7280;vertical-align:top;white-space:nowrap">${escapeHtml(label)}:</td><td style="padding:6px 0;color:#111827">${escapeHtml(value)}</td></tr>`,
+        `<tr><td style="padding:9px 16px 9px 0;color:#6b7280;vertical-align:top;white-space:nowrap;font-size:13px">${escapeHtml(label)}</td><td style="padding:9px 0;color:#111827;vertical-align:top;font-size:13px">${escapeHtml(value)}</td></tr>`,
     )
     .join('')
-  return `<table style="border-collapse:collapse;font-size:14px;line-height:1.5">${cells}</table>`
+  return `<table role="presentation" style="border-collapse:collapse;width:100%;line-height:1.5">${cells}</table>`
 }
 
 function layout(title: string, rows: MailRow[], footer: string): MailContent {
+  const logoUrl = `${env.FRONTEND_URL}/favicon.svg`
+  const text = `${title}\n\n${rowsText(rows)}\n\n${footer}`
   return {
     subject: '',
-    text: `${title}\n\n${rowsText(rows)}\n\n${footer}`,
-    html: `<!doctype html><html><body style="margin:0;padding:24px;background:#f4f4f5;font-family:Arial,Helvetica,sans-serif"><div style="max-width:560px;margin:0 auto;background:#ffffff;border:1px solid #e4e4e7;border-radius:8px;padding:24px"><h2 style="margin:0 0 16px;font-size:18px;color:#18181b">${escapeHtml(title)}</h2>${rowsHtml(rows)}<p style="margin:20px 0 0;font-size:12px;color:#71717a">${escapeHtml(footer)}</p></div></body></html>`,
+    text,
+    html: `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head><body style="margin:0;padding:0;background:#f4f6fb;font-family:Arial,Helvetica,sans-serif;color:#17203a"><div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapeHtml(title)} — Arovix</div><table role="presentation" style="width:100%;border-collapse:collapse;background:#f4f6fb"><tr><td style="padding:32px 16px"><table role="presentation" style="width:100%;max-width:600px;margin:0 auto;border-collapse:collapse;background:#ffffff;border:1px solid #e5e8f0;border-radius:16px;overflow:hidden"><tr><td style="padding:26px 32px;background:#151a2d"><table role="presentation" style="border-collapse:collapse"><tr><td style="width:40px;height:40px;background:#635bff;border-radius:10px;text-align:center;vertical-align:middle"><img src="${escapeHtml(logoUrl)}" width="40" height="40" alt="Arovix" style="display:block;border:0;border-radius:10px"></td><td style="padding-left:12px;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-.4px">Arovix</td></tr></table></td></tr><tr><td style="padding:36px 32px 12px"><h1 style="margin:0;color:#17203a;font-size:26px;line-height:1.2;letter-spacing:-.5px">${escapeHtml(title)}</h1></td></tr><tr><td style="padding:8px 32px 24px;color:#59627a;font-size:15px;line-height:1.7">Thank you for reaching out to us. We have received your message and our team will review it carefully.</td></tr><tr><td style="padding:0 32px 24px"><div style="padding:18px 20px;background:#f7f8fc;border:1px solid #e8ebf3;border-radius:10px">${rowsHtml(rows)}</div></td></tr><tr><td style="padding:4px 32px 32px;color:#59627a;font-size:14px;line-height:1.7">${escapeHtml(footer)}</td></tr><tr><td style="padding:20px 32px;background:#f7f8fc;border-top:1px solid #e8ebf3;color:#8a92a6;font-size:12px;line-height:1.6">Arovix · Digital products, thoughtfully built.<br><a href="${escapeHtml(env.FRONTEND_URL)}" style="color:#635bff;text-decoration:none">Visit our website</a></td></tr></table></td></tr></table></body></html>`,
   }
 }
 
@@ -62,9 +64,15 @@ async function sendEmail(to: string, content: MailContent): Promise<void> {
     })
   } catch (error) {
     if (error instanceof EmailProviderError) throw error
-    const code = typeof error === 'object' && error !== null && 'code' in error ? String((error as { code?: unknown }).code) : ''
-    if (code === 'ETIMEDOUT' || code === 'ESOCKET') throw new EmailProviderError('Email provider request timed out')
-    throw new EmailProviderError('Email provider request failed')
+    const providerCode = typeof error === 'object' && error !== null && 'code' in error
+      ? String((error as { code?: unknown }).code).slice(0, 32)
+      : undefined
+    const responseCode = typeof error === 'object' && error !== null && 'responseCode' in error && typeof (error as { responseCode?: unknown }).responseCode === 'number'
+      ? (error as { responseCode: number }).responseCode
+      : undefined
+    const code = providerCode ?? ''
+    if (code === 'ETIMEDOUT' || code === 'ESOCKET') throw new EmailProviderError('Email provider request timed out', providerCode, responseCode)
+    throw new EmailProviderError('Email provider request failed', providerCode, responseCode)
   }
 }
 
@@ -86,13 +94,13 @@ export async function notifyContact(data: ContactEmailData): Promise<void> {
 
 export async function confirmContact(data: ContactEmailData): Promise<void> {
   const content = layout(
-    `Thank you, ${data.name}`,
+    `Thanks for reaching out, ${data.name}`,
     [
       ['Subject', data.subject],
       ['Message', data.message],
       ['Submitted at', data.submittedAt],
     ],
-    'We will get back to you shortly. — The Arovix team',
+    'We will get back to you soon with a thoughtful next step. — The Arovix team',
   )
   await sendEmail(data.email, { ...content, subject: `We received your message: ${data.subject}` })
 }

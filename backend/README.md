@@ -4,12 +4,12 @@ Secure, modular REST API for the company website. It uses Node.js, Express, Type
 
 ## Local setup
 
-1. Install Node.js 22+ and start MongoDB and Redis.
+1. Install Node.js 22+ and start MongoDB. Redis is optional; when it is unavailable, the API continues without caching.
 2. Copy `.env.example` to `.env` and replace all secret placeholders with random values of at least 32 characters.
 3. Run `npm install`, then `npm run dev`.
 4. Create the first administrator with `ADMIN_EMAIL=... ADMIN_PASSWORD=... npx tsx scripts/create-admin.ts`.
 
-`MONGODB_URI`, `REDIS_URL`, and all secret settings are required. The API refuses to start with invalid configuration. Refresh sessions are rotated and stored only as hashes; authentication cookies are HttpOnly and never require localStorage.
+`MONGODB_URI`, `REDIS_URL`, and all secret settings are required in configuration. If Redis is unavailable at runtime, cache operations are skipped and the API remains available. Refresh sessions are rotated and stored only as hashes; authentication cookies are HttpOnly and never require localStorage.
 
 ## Commands
 
@@ -42,4 +42,4 @@ To test locally, submit `POST /api/v1/contact` or `POST /api/v1/applications` ag
 
 ## Deployment
 
-Run the compiled `dist/server.js` with managed MongoDB and Redis. Rotate JWT and cookie secrets by changing them and restarting; this invalidates existing tokens. Do not put secrets in images or source control. Redis is required at startup because it is used for rate-limit infrastructure; cache failures are logged and fall back to MongoDB reads.
+Run the compiled `dist/server.js` with managed MongoDB and Redis. Rotate JWT and cookie secrets by changing them and restarting; this invalidates existing tokens. Do not put secrets in images or source control. Redis is used for rate-limit infrastructure when available; cache failures are logged and fall back to MongoDB reads.

@@ -8,7 +8,7 @@ export function validate(schema: z.ZodType): RequestHandler {
     if (!result.success) return next(new AppError(400, 'Invalid request data', result.error.issues))
     const data = result.data as { body: unknown; query: unknown; params: unknown }
     request.body = data.body
-    request.query = data.query as typeof request.query
+    Object.defineProperty(request, 'query', { configurable: true, enumerable: true, value: data.query })
     request.params = data.params as typeof request.params
     return next()
   }

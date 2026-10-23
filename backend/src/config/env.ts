@@ -14,9 +14,9 @@ const schema = z.object({
   COOKIE_SECRET: z.string().min(32),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   SMTP_SERVICE: z.string().min(1).default('gmail'),
-  SMTP_USER: z.string().min(1).optional(),
-  SMTP_PASSWORD: z.string().min(1).optional(),
-  ADMIN_NOTIFICATION_EMAIL: z.string().email().optional(),
+  SMTP_USER: z.string().trim().min(1).optional(),
+  SMTP_PASSWORD: z.string().transform((value) => value.replace(/\s+/g, '')).pipe(z.string().min(1)).optional(),
+  ADMIN_NOTIFICATION_EMAIL: z.string().trim().email().optional(),
 })
 
 const result = schema.safeParse(process.env)
