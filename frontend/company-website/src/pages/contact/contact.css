@@ -1,3 +1,24 @@
+.page.contact-page h1 { font-size: clamp(3rem, 6vw, 5.5rem); letter-spacing: -0.09em; max-width: 640px; }
+
+@media (min-width: 969px) {
+  .page.contact-page {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    padding: 4rem 6vw 3rem;
+  }
+  .page.contact-page .page-hero {
+    min-height: 330px;
+  }
+  .page.contact-page .form {
+    margin-top: 2rem;
+  }
+  .page.contact-page .page-hero-image {
+    align-self: center;
+    justify-self: center;
+    margin-inline: auto;
+  }
+}
 .contact-form { animation: contact-form-in .65s cubic-bezier(.22,1,.36,1) both; }
 .contact-form label { color: #7d7e91; position: relative; transition: color .25s, transform .25s; }
 .contact-form label::after { background: linear-gradient(90deg, #7770d4, #77c99b); bottom: 0; content: ''; height: 2px; left: 0; position: absolute; transform: scaleX(0); transform-origin: left; transition: transform .35s ease; width: 100%; }
@@ -13,6 +34,12 @@
 .contact-submit:disabled { cursor: wait; opacity: .75; }
 .contact-submit.is-sending b { animation: contact-dots 1s ease-in-out infinite; }
 .form-success { color: #4b9e73 !important; }.form-error { color: #b25b69 !important; }
+.form-notice { animation: contact-form-in .4s cubic-bezier(.22,1,.36,1) both; border-radius: 14px; display: flex; flex-direction: column; gap: .18rem; margin: .35rem 0 0; padding: .85rem 1.1rem; }
+.form-notice b { font-size: .78rem; font-weight: 600; letter-spacing: .01em; }
+.form-notice span { font-size: .76rem; line-height: 1.55; opacity: .88; }
+.form-notice-success { background: #edf9f1; border: 1px solid #c6e9d3; color: #2c6a48; }
+.form-notice-info { background: #f4f1ff; border: 1px solid #ddd5ff; color: #4c4290; }
+.form-notice-error { background: #fdf0f2; border: 1px solid #f2ccd3; color: #8c3847; }
 @keyframes contact-form-in { from { opacity: 0; transform: translateY(1rem); } to { opacity: 1; transform: translateY(0); } }
 @keyframes contact-dots { 0%, 100% { transform: scale(.85); } 50% { transform: scale(1.1); } }
 @media (prefers-reduced-motion: reduce) { .contact-form, .contact-submit, .contact-submit b { animation: none; transition: none; } }

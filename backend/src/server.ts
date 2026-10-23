@@ -4,6 +4,7 @@ import { env } from './config/env.js'
 import { connectDatabase, disconnectDatabase } from './config/database.js'
 import { connectRedis, disconnectRedis } from './config/redis.js'
 import { logger } from './config/logger.js'
+import { adminRecipient, emailConfigured } from './modules/email/email.service.js'
 
 const server = createServer(app)
 let shuttingDown = false
@@ -20,6 +21,11 @@ async function shutdown(signal: string): Promise<void> {
 async function start(): Promise<void> {
   await connectDatabase()
   await connectRedis()
+  if (emailConfigured()) {
+    logger.info({ recipient: adminRecipient() }, 'Email notifications enabled')
+  } else {
+    logger.warn('Email notifications are DISABLED — set SMTP_USER and SMTP_PASSWORD in backend/.env (npm run email:test to verify)')
+  }
   server.listen(env.PORT, () => logger.info({ port: env.PORT }, 'API listening'))
 }
 

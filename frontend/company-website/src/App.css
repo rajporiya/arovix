@@ -334,6 +334,17 @@ h2 i {
   height: auto;
   width: 100%;
 }
+/* Same entrance animation as the home hero image (fade in + scale up) */
+@keyframes image-reveal {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: none; }
+}
+.page-hero-image,
+.services-hero-image,
+.adv-brand-logo img,
+.adv-footer-brand-header .adv-brand-logo img {
+  animation: image-reveal 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) 0.3s both;
+}
 .listing {
   margin-top: 7rem;
 }

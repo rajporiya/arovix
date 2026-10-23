@@ -28,17 +28,34 @@ Email notifications are sent from the backend over SMTP using Nodemailer, with G
 ### Account and service setup
 
 1. Enable 2-Step Verification on the Gmail account, then create an App Password at https://myaccount.google.com/apppasswords (a normal login password will be rejected by Gmail).
-2. Copy the values into `.env`: `SMTP_SERVICE=gmail`, `SMTP_USER`, `SMTP_PASSWORD`, and `ADMIN_NOTIFICATION_EMAIL` (where new inquiries and applications are delivered). Use `.env.example` as the variable reference.
-3. The backend composes the emails itself — no templates are required. Each submission sends two messages: an administrator notification and a confirmation to the submitter.
+2. Copy the values into `.env`: `SMTP_SERVICE=gmail`, `SMTP_USER`, `SMTP_PASSWORD`, and optionally `ADMIN_NOTIFICATION_EMAIL` (where new inquiries and applications are delivered; it defaults to `SMTP_USER` when empty).
+3. Run `npm run email:test`. It verifies the SMTP connection, sends a real sample inquiry to the admin inbox, and sends the confirmation template to `SMTP_USER`. Check the inbox and spam folder.
+4. The backend composes the emails itself — no templates are required. Each submission sends two designed HTML emails: an administrator notification (with `Reply-To` set to the submitter) and a branded confirmation to the submitter.
+
+Optional variables: `MAIL_FROM_NAME` (sender display name), `MAIL_REPLY_TO` (reply-to for confirmations), `MAIL_TIMEZONE` (timestamps in emails), and `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` for any non-Gmail SMTP provider.
 
 Notification content comes from these fields:
 
 - Contact: `name`, `email`, `subject`, `message`, `submittedAt`.
 - Career: `applicantName`, `applicantEmail`, `jobTitle`, `applicationId`, `submittedAt`.
 
-If SMTP configuration is missing or Gmail rejects a request, the contact or application remains saved and the API still returns the submission result; the server records only a redacted, generic notification failure. SMTP attempts have an eight-second connection/greeting/socket timeout and are not blindly retried, preventing duplicate messages.
+### Delivery behaviour and troubleshooting
 
-To test locally, submit `POST /api/v1/contact` or `POST /api/v1/applications` against a published career record and check the recipient inbox (and the spam folder). Automated tests mock Nodemailer and never send real email. Diagnose provider failures using the backend warning log and Gmail's activity page, without logging or sharing the app password.
+The inquiry/application is always saved first. The API response now includes a truthful delivery state:
+
+```json
+{ "id": "...", "email": { "admin": "sent", "confirmation": "sent" } }
+```
+
+`"failed"` means the record was stored but the message did not leave the server. The server logs the provider code and response code (never the password) with a hint to check `.env`. Common causes:
+
+- `SMTP_USER` / `SMTP_PASSWORD` empty → "Email provider is not configured". Copy `.env.example` to `.env` and fill them in.
+- `EAUTH` / `535` → the Gmail App Password is wrong, revoked, or 2-Step Verification is off. Create a new App Password.
+- Timeouts (`ETIMEDOUT`, `ESOCKET`) on a host that blocks port 587 → use port 465 with `SMTP_SECURE=true`, or a different provider.
+- Email in spam → for a custom domain, configure SPF, DKIM, and DMARC; Gmail "Send mail as" also requires verification.
+- Nothing in the admin inbox → `ADMIN_NOTIFICATION_EMAIL` is empty and `SMTP_USER` is wrong.
+
+SMTP attempts have an eight-second connection/greeting/socket timeout and are not blindly retried, preventing duplicate messages. Automated tests mock Nodemailer and never send real email.
 
 ## Deployment
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 
-export function PageShell({ title, intro, image, children }: { title: ReactNode; intro: string; image?: string; children?: ReactNode }) {
+export function PageShell({ title, intro, image, children, className }: { title: ReactNode; intro: string; image?: string; className?: string; children?: ReactNode }) {
   const head = (
     <>
       <p className="eyebrow">Arovix / Studio</p>
@@ -10,7 +10,7 @@ export function PageShell({ title, intro, image, children }: { title: ReactNode;
   )
 
   return (
-    <section className="page paper">
+    <section className={`page paper${className ? ` ${className}` : ''}`}>
       {image ? (
         <div className="page-hero">
           <div>{head}</div>

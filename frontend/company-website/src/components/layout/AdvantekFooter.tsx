@@ -1,5 +1,9 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { Mail } from 'lucide-react'
 import appLogo from '../../assets/app-logo.png'
+import { subscribeNewsletter } from '../../lib/api'
+import { Toast, type ToastData } from '../shared/Toast'
 import './AdvantekFooter.css'
 
 interface FooterProps {
@@ -7,9 +11,30 @@ interface FooterProps {
 }
 
 export function AdvantekFooter({ navigate }: FooterProps) {
+  const [email, setEmail] = useState('')
+  const [subscribing, setSubscribing] = useState(false)
+  const [toast, setToast] = useState<ToastData | null>(null)
+
   const handleNavClick = (e: React.MouseEvent, href: string) => {
     e.preventDefault()
     navigate(href)
+  }
+
+  const handleSubscribe = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setSubscribing(true)
+    setToast(null)
+    try {
+      const delivery = await subscribeNewsletter(email)
+      setToast(delivery === 'sent'
+        ? { tone: 'success', title: 'Subscribed', body: 'Thanks for subscribing! A confirmation email is on its way — new announcements will arrive in this inbox first.' }
+        : { tone: 'success', title: 'Subscribed', body: 'You are subscribed. The confirmation email could not be sent right now, but no announcement will miss you.' })
+      setEmail('')
+    } catch {
+      setToast({ tone: 'error', title: 'Subscription failed', body: 'Could not subscribe right now. Please check your connection and try again in a moment.' })
+    } finally {
+      setSubscribing(false)
+    }
   }
 
   return (
@@ -79,18 +104,26 @@ export function AdvantekFooter({ navigate }: FooterProps) {
             <div className="adv-footer-column">
               <h4 className="adv-footer-title">Newsletter</h4>
               <p className="adv-footer-newsletter-text">Get every single update to join our newsletter</p>
-              <div className="adv-newsletter-form">
+              <form className="adv-newsletter-form" onSubmit={handleSubscribe}>
                 <div className="adv-newsletter-input-group">
                   <Mail size={18} className="adv-newsletter-icon" />
-                  <input type="email" placeholder="Enter your email" className="adv-newsletter-input" />
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="adv-newsletter-input"
+                    autoComplete="email"
+                    value={email}
+                    onChange={(event) => { setEmail(event.target.value); setToast(null) }}
+                    required
+                  />
                 </div>
-                <button className="adv-newsletter-btn" type="button">
-                  Sign up
+                <button className="adv-newsletter-btn" type="submit" disabled={subscribing}>
+                  {subscribing ? 'Subscribing…' : 'Subscribe'}
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </button>
-              </div>
+              </form>
             </div>
           </div>
         </div>
@@ -101,6 +134,7 @@ export function AdvantekFooter({ navigate }: FooterProps) {
           </p>
         </div>
       </div>
+      {toast && <Toast toast={toast} onClose={() => setToast(null)} />}
     </footer>
   )
 }

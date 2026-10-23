@@ -4,6 +4,12 @@ export type ContactEmailData = {
   subject: string
   message: string
   submittedAt: string
+  reference?: string
+}
+
+export type SubscriberEmailData = {
+  email: string
+  subscribedAt: string
 }
 
 export type CareerEmailData = {
@@ -12,6 +18,7 @@ export type CareerEmailData = {
   jobTitle: string
   applicationId: string
   submittedAt: string
+  reference?: string
 }
 
 export class EmailProviderError extends Error {

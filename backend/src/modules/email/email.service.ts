@@ -1,137 +1,297 @@
 import nodemailer from 'nodemailer'
 import { env } from '../../config/env.js'
-import { EmailProviderError, type CareerEmailData, type ContactEmailData } from './email.types.js'
+import { EmailProviderError, type CareerEmailData, type ContactEmailData, type SubscriberEmailData } from './email.types.js'
+import { renderEmail, type EmailTemplate } from './email.template.js'
 
 const REQUEST_TIMEOUT_MS = 8000
 
-type MailContent = { subject: string; text: string; html: string }
-type MailRow = [label: string, value: string]
+type MailContent = { subject: string; text: string; html: string; replyTo?: string }
+export type SendEmailResult = { messageId: string; accepted: string[] }
 
 function configured(): boolean {
   return Boolean(env.SMTP_USER && env.SMTP_PASSWORD)
 }
 
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;')
-    .replace(/\r?\n/g, '<br>')
+export function emailConfigured(): boolean {
+  return configured()
 }
 
-function rowsText(rows: MailRow[]): string {
-  return rows.map(([label, value]) => `${label}: ${value}`).join('\n')
+/** Admin notifications fall back to the SMTP mailbox, so a single account is enough to get started. */
+export function adminRecipient(): string | undefined {
+  return env.ADMIN_NOTIFICATION_EMAIL ?? env.SMTP_USER
 }
 
-function rowsHtml(rows: MailRow[]): string {
-  const cells = rows
-    .map(
-      ([label, value]) =>
-        `<tr><td style="padding:9px 16px 9px 0;color:#6b7280;vertical-align:top;white-space:nowrap;font-size:13px">${escapeHtml(label)}</td><td style="padding:9px 0;color:#111827;vertical-align:top;font-size:13px">${escapeHtml(value)}</td></tr>`,
-    )
-    .join('')
-  return `<table role="presentation" style="border-collapse:collapse;width:100%;line-height:1.5">${cells}</table>`
+function fromName(): string {
+  const name = (env.MAIL_FROM_NAME || 'Arovix').replace(/["\r\n]/g, '').trim().slice(0, 80)
+  return name || 'Arovix'
 }
 
-function layout(title: string, rows: MailRow[], footer: string): MailContent {
-  const logoUrl = `${env.FRONTEND_URL}/favicon.svg`
-  const text = `${title}\n\n${rowsText(rows)}\n\n${footer}`
-  return {
-    subject: '',
-    text,
-    html: `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head><body style="margin:0;padding:0;background:#f4f6fb;font-family:Arial,Helvetica,sans-serif;color:#17203a"><div style="display:none;max-height:0;overflow:hidden;opacity:0">${escapeHtml(title)} — Arovix</div><table role="presentation" style="width:100%;border-collapse:collapse;background:#f4f6fb"><tr><td style="padding:32px 16px"><table role="presentation" style="width:100%;max-width:600px;margin:0 auto;border-collapse:collapse;background:#ffffff;border:1px solid #e5e8f0;border-radius:16px;overflow:hidden"><tr><td style="padding:26px 32px;background:#151a2d"><table role="presentation" style="border-collapse:collapse"><tr><td style="width:40px;height:40px;background:#635bff;border-radius:10px;text-align:center;vertical-align:middle"><img src="${escapeHtml(logoUrl)}" width="40" height="40" alt="Arovix" style="display:block;border:0;border-radius:10px"></td><td style="padding-left:12px;color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-.4px">Arovix</td></tr></table></td></tr><tr><td style="padding:36px 32px 12px"><h1 style="margin:0;color:#17203a;font-size:26px;line-height:1.2;letter-spacing:-.5px">${escapeHtml(title)}</h1></td></tr><tr><td style="padding:8px 32px 24px;color:#59627a;font-size:15px;line-height:1.7">Thank you for reaching out to us. We have received your message and our team will review it carefully.</td></tr><tr><td style="padding:0 32px 24px"><div style="padding:18px 20px;background:#f7f8fc;border:1px solid #e8ebf3;border-radius:10px">${rowsHtml(rows)}</div></td></tr><tr><td style="padding:4px 32px 32px;color:#59627a;font-size:14px;line-height:1.7">${escapeHtml(footer)}</td></tr><tr><td style="padding:20px 32px;background:#f7f8fc;border-top:1px solid #e8ebf3;color:#8a92a6;font-size:12px;line-height:1.6">Arovix · Digital products, thoughtfully built.<br><a href="${escapeHtml(env.FRONTEND_URL)}" style="color:#635bff;text-decoration:none">Visit our website</a></td></tr></table></td></tr></table></body></html>`,
+function createTransport() {
+  if (!configured()) throw new EmailProviderError('Email provider is not configured')
+  const auth = { user: env.SMTP_USER, pass: env.SMTP_PASSWORD }
+  const timeouts = {
+    connectionTimeout: REQUEST_TIMEOUT_MS,
+    greetingTimeout: REQUEST_TIMEOUT_MS,
+    socketTimeout: REQUEST_TIMEOUT_MS,
+  }
+  if (env.SMTP_HOST) {
+    const port = env.SMTP_PORT ?? 587
+    return nodemailer.createTransport({
+      host: env.SMTP_HOST,
+      port,
+      secure: env.SMTP_SECURE ?? port === 465,
+      requireTLS: port === 587,
+      auth,
+      ...timeouts,
+    })
+  }
+  return nodemailer.createTransport({
+    service: env.SMTP_SERVICE,
+    auth,
+    ...timeouts,
+  })
+}
+
+function providerCodeOf(error: unknown): string | undefined {
+  if (typeof error !== 'object' || error === null || !('code' in error)) return undefined
+  return String((error as { code?: unknown }).code).slice(0, 32)
+}
+
+function responseCodeOf(error: unknown): number | undefined {
+  if (typeof error !== 'object' || error === null || !('responseCode' in error)) return undefined
+  const code = (error as { responseCode?: unknown }).responseCode
+  return typeof code === 'number' ? code : undefined
+}
+
+function normalizeError(error: unknown): EmailProviderError {
+  if (error instanceof EmailProviderError) return error
+  const providerCode = providerCodeOf(error)
+  const responseCode = responseCodeOf(error)
+  if (providerCode === 'ETIMEDOUT' || providerCode === 'ESOCKET') {
+    return new EmailProviderError('Email provider request timed out', providerCode, responseCode)
+  }
+  if (responseCode === 535 || providerCode === 'EAUTH') {
+    return new EmailProviderError('Email provider rejected the credentials', providerCode, responseCode)
+  }
+  return new EmailProviderError('Email provider request failed', providerCode, responseCode)
+}
+
+/** Opens a real connection to the SMTP server so misconfiguration is caught before a user submits a form. */
+export async function verifyEmailConnection(): Promise<void> {
+  const transport = createTransport()
+  try {
+    await transport.verify()
+  } catch (error) {
+    throw normalizeError(error)
+  } finally {
+    transport.close()
   }
 }
 
-async function sendEmail(to: string, content: MailContent): Promise<void> {
-  if (!configured()) throw new EmailProviderError('Email provider is not configured')
+export async function sendEmail(to: string, content: MailContent): Promise<SendEmailResult> {
+  const transport = createTransport()
   try {
-    const transport = nodemailer.createTransport({
-      service: env.SMTP_SERVICE ?? 'gmail',
-      auth: { user: env.SMTP_USER, pass: env.SMTP_PASSWORD },
-      connectionTimeout: REQUEST_TIMEOUT_MS,
-      greetingTimeout: REQUEST_TIMEOUT_MS,
-      socketTimeout: REQUEST_TIMEOUT_MS,
-    })
-    await transport.sendMail({
-      from: `"Arovix" <${env.SMTP_USER}>`,
+    const info = await transport.sendMail({
+      from: `"${fromName()}" <${env.SMTP_USER}>`,
       to,
+      replyTo: content.replyTo ?? env.MAIL_REPLY_TO ?? undefined,
       subject: content.subject,
       text: content.text,
       html: content.html,
+      headers: { 'X-Auto-Response-Suppress': 'OOF, AutoReply' },
     })
+    const accepted = (info.accepted ?? []).map(String)
+    if (accepted.length === 0) {
+      throw new EmailProviderError('Email provider rejected every recipient', 'EENVELOPE')
+    }
+    return { messageId: info.messageId ?? '', accepted }
   } catch (error) {
-    if (error instanceof EmailProviderError) throw error
-    const providerCode = typeof error === 'object' && error !== null && 'code' in error
-      ? String((error as { code?: unknown }).code).slice(0, 32)
-      : undefined
-    const responseCode = typeof error === 'object' && error !== null && 'responseCode' in error && typeof (error as { responseCode?: unknown }).responseCode === 'number'
-      ? (error as { responseCode: number }).responseCode
-      : undefined
-    const code = providerCode ?? ''
-    if (code === 'ETIMEDOUT' || code === 'ESOCKET') throw new EmailProviderError('Email provider request timed out', providerCode, responseCode)
-    throw new EmailProviderError('Email provider request failed', providerCode, responseCode)
+    throw normalizeError(error)
   }
 }
 
+function createMomentFormatter(timeZone: string): Intl.DateTimeFormat {
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+  }
+  try {
+    return new Intl.DateTimeFormat('en-GB', { ...options, timeZone })
+  } catch {
+    return new Intl.DateTimeFormat('en-GB', { ...options, timeZone: 'UTC' })
+  }
+}
+
+const momentFormatter = createMomentFormatter(env.MAIL_TIMEZONE)
+
+function formatMoment(value: string): string {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime()) ? value : momentFormatter.format(date)
+}
+
+function firstName(name: string): string {
+  return name.trim().split(/\s+/)[0] ?? name.trim()
+}
+
+function deliver(to: string, template: EmailTemplate, replyTo?: string): Promise<SendEmailResult> {
+  return sendEmail(to, { ...renderEmail(template), replyTo })
+}
+
 export async function notifyContact(data: ContactEmailData): Promise<void> {
-  if (!env.ADMIN_NOTIFICATION_EMAIL) throw new EmailProviderError('Administrator notification email is not configured')
-  const content = layout(
-    'New contact inquiry',
-    [
-      ['Name', data.name],
-      ['Email', data.email],
-      ['Subject', data.subject],
-      ['Message', data.message],
-      ['Submitted at', data.submittedAt],
-    ],
-    'Sent from the Arovix website contact form.',
+  const to = adminRecipient()
+  if (!to) throw new EmailProviderError('Administrator notification email is not configured')
+  const name = firstName(data.name)
+  const received = formatMoment(data.submittedAt)
+  const mailto = `mailto:${data.email}?subject=${encodeURIComponent(`Re: ${data.subject}`)}`
+  await deliver(
+    to,
+    {
+      subject: `New contact inquiry: ${data.subject}`,
+      preheader: `${data.name} (${data.email}) sent a new inquiry about ${data.subject}.`,
+      eyebrow: 'New inquiry',
+      badge: 'Contact form',
+      title: `New message from ${data.name}`,
+      intro: `A new inquiry just arrived through the Arovix website. Reply directly to this email to answer ${name} straight away.`,
+      details: [
+        { label: 'Name', value: data.name },
+        { label: 'Email', value: data.email, href: `mailto:${data.email}` },
+        { label: 'Subject', value: data.subject },
+        { label: 'Received', value: received },
+        ...(data.reference ? [{ label: 'Reference', value: data.reference }] : []),
+      ],
+      message: { label: 'Their message', body: data.message },
+      cta: { label: `Reply to ${name}`, href: mailto },
+      note: 'Hit reply to answer this inquiry. Your response goes straight to the sender, not to a no-reply address.',
+      footerNote: 'Automatic notification from the Arovix website contact form.',
+    },
+    data.email,
   )
-  await sendEmail(env.ADMIN_NOTIFICATION_EMAIL, { ...content, subject: `New contact inquiry: ${data.subject}` })
 }
 
 export async function confirmContact(data: ContactEmailData): Promise<void> {
-  const content = layout(
-    `Thanks for reaching out, ${data.name}`,
-    [
-      ['Subject', data.subject],
-      ['Message', data.message],
-      ['Submitted at', data.submittedAt],
-    ],
-    'We will get back to you soon with a thoughtful next step. — The Arovix team',
+  const name = firstName(data.name)
+  const received = formatMoment(data.submittedAt)
+  await deliver(
+    data.email,
+    {
+      subject: `We received your message: ${data.subject}`,
+      preheader: `Thanks ${name} — your message reached the Arovix team.`,
+      eyebrow: 'Message received',
+      badge: 'Thank you',
+      title: `Thanks, ${name} — we've got it.`,
+      intro: `Your message reached our team and a real person will read it. Expect a considered reply within one business day.`,
+      details: [
+        { label: 'Subject', value: data.subject },
+        { label: 'Received', value: received },
+        ...(data.reference ? [{ label: 'Reference', value: data.reference }] : []),
+      ],
+      message: { label: 'What you sent us', body: data.message },
+      steps: [
+        { title: 'We read it properly', body: 'Your message goes to the team that handles this kind of work — not an autoresponder.' },
+        { title: 'We come back with substance', body: 'You will hear from us within one business day with a clear next step or a useful question.' },
+        { title: 'No pressure, no noise', body: 'We only follow up while there is something worth discussing.' },
+      ],
+      cta: { label: 'Explore Arovix', href: env.FRONTEND_URL },
+      note: 'Need to add something? Just reply to this email and it will reach our team.',
+      footerNote: 'You received this email because you contacted Arovix through our website.',
+    },
+    env.MAIL_REPLY_TO ?? adminRecipient(),
   )
-  await sendEmail(data.email, { ...content, subject: `We received your message: ${data.subject}` })
+}
+
+/**
+ * Newsletter welcome: confirms the subscription and sets the expectation that
+ * fresh announcements will follow. No admin copy — the user is the recipient.
+ */
+export async function confirmSubscribe(data: SubscriberEmailData): Promise<void> {
+  const subscribed = formatMoment(data.subscribedAt)
+  await deliver(
+    data.email,
+    {
+      subject: 'Thanks for subscribing — new things are coming',
+      preheader: 'You are on the list. New announcements will land in this inbox first.',
+      eyebrow: 'Subscription confirmed',
+      badge: 'Newsletter',
+      title: 'You are on the list.',
+      intro: 'Thanks for subscribing to updates from the Arovix website. This inbox is now the first place our new announcements will arrive — new services, launches, and things worth knowing.',
+      details: [
+        { label: 'Subscribed address', value: data.email },
+        { label: 'Subscribed', value: subscribed },
+      ],
+      steps: [
+        { title: 'What you will get', body: 'Only real updates — launches, new services, and useful announcements. No filler and no daily noise.' },
+        { title: 'What to expect', body: 'New announcements arrive here first, before they appear anywhere else.' },
+        { title: 'Want out later?', body: 'Just reply to any update and ask to unsubscribe — one reply and we remove you.' },
+      ],
+      cta: { label: 'Explore Arovix', href: env.FRONTEND_URL },
+      note: 'Nothing arrived after this? Then the next announcement has not been sent yet — your subscription is confirmed and waiting.',
+      footerNote: 'You received this email because you subscribed to updates on our website.',
+    },
+    adminRecipient(),
+  )
 }
 
 export async function notifyCareer(data: CareerEmailData): Promise<void> {
-  if (!env.ADMIN_NOTIFICATION_EMAIL) throw new EmailProviderError('Administrator notification email is not configured')
-  const content = layout(
-    'New career application',
-    [
-      ['Applicant', data.applicantName],
-      ['Email', data.applicantEmail],
-      ['Position', data.jobTitle],
-      ['Application ID', data.applicationId],
-      ['Submitted at', data.submittedAt],
-    ],
-    'Sent from the Arovix website careers page.',
+  const to = adminRecipient()
+  if (!to) throw new EmailProviderError('Administrator notification email is not configured')
+  const name = firstName(data.applicantName)
+  const received = formatMoment(data.submittedAt)
+  await deliver(
+    to,
+    {
+      subject: `New application for ${data.jobTitle}`,
+      preheader: `${data.applicantName} applied for ${data.jobTitle}.`,
+      eyebrow: 'New application',
+      badge: 'Careers',
+      title: `${data.applicantName} applied for ${data.jobTitle}`,
+      intro: `A new career application just arrived. Review the details below and reply directly to ${name} to start the conversation.`,
+      details: [
+        { label: 'Applicant', value: data.applicantName },
+        { label: 'Email', value: data.applicantEmail, href: `mailto:${data.applicantEmail}` },
+        { label: 'Position', value: data.jobTitle },
+        { label: 'Application ID', value: data.applicationId },
+        { label: 'Received', value: received },
+      ],
+      cta: { label: `Reply to ${name}`, href: `mailto:${data.applicantEmail}?subject=${encodeURIComponent(`Your application for ${data.jobTitle}`)}` },
+      note: 'Applications are stored in the Arovix admin dashboard as well as delivered here.',
+      footerNote: 'Automatic notification from the Arovix website careers page.',
+    },
+    data.applicantEmail,
   )
-  await sendEmail(env.ADMIN_NOTIFICATION_EMAIL, { ...content, subject: `New application for ${data.jobTitle}` })
 }
 
 export async function confirmCareer(data: CareerEmailData): Promise<void> {
-  const content = layout(
-    `Application received, ${data.applicantName}`,
-    [
-      ['Position', data.jobTitle],
-      ['Application ID', data.applicationId],
-      ['Submitted at', data.submittedAt],
-    ],
-    'Thank you for your interest in Arovix. We will review your application soon.',
+  const name = firstName(data.applicantName)
+  const received = formatMoment(data.submittedAt)
+  await deliver(
+    data.applicantEmail,
+    {
+      subject: `We received your application for ${data.jobTitle}`,
+      preheader: `Thanks ${name} — your application for ${data.jobTitle} is in.`,
+      eyebrow: 'Application received',
+      badge: 'Careers',
+      title: `Thanks, ${name}. Your application is in.`,
+      intro: `We have your application for ${data.jobTitle}. Our team reviews every submission carefully, and we will be in touch if there is a strong fit.`,
+      details: [
+        { label: 'Position', value: data.jobTitle },
+        { label: 'Application ID', value: data.applicationId },
+        { label: 'Received', value: received },
+      ],
+      steps: [
+        { title: 'Review', body: 'We read your application alongside the role requirements.' },
+        { title: 'Response', body: 'If your experience matches, we will reach out to arrange a conversation.' },
+        { title: 'Keep exploring', body: 'You are welcome to apply for other roles that fit your skills.' },
+      ],
+      cta: { label: 'See open roles', href: `${env.FRONTEND_URL}/careers` },
+      note: 'If your details change, reply to this email and let us know.',
+      footerNote: 'You received this email because you applied through the Arovix careers page.',
+    },
+    env.MAIL_REPLY_TO ?? adminRecipient(),
   )
-  await sendEmail(data.applicantEmail, { ...content, subject: `We received your application for ${data.jobTitle}` })
 }
 
-export { REQUEST_TIMEOUT_MS, sendEmail }
+export { REQUEST_TIMEOUT_MS }

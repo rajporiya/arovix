@@ -1,0 +1,17 @@
+/* ================= Blog page ================= */
+
+/* Smaller hero title, larger hero image */
+@media (min-width: 969px) {
+  .page.blog-page h1 {
+    font-size: clamp(2.75rem, 4.2vw, 4rem);
+    letter-spacing: -0.09em;
+    max-width: 800px;
+  }
+  .page.blog-page .page-hero {
+    grid-template-columns: 0.9fr 1.3fr;
+  }
+  .page.blog-page .page-hero-image {
+    margin-inline: auto;
+    max-width: 720px;
+  }
+}

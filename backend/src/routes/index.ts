@@ -10,7 +10,7 @@ import { sendSuccess } from '../utils/api-response.js'
 import { AppError } from '../utils/app-error.js'
 import { getCache, setCache, deleteCache } from '../utils/cache.js'
 import { logger } from '../config/logger.js'
-import { confirmCareer, confirmContact, notifyCareer, notifyContact } from '../modules/email/email.service.js'
+import { confirmCareer, confirmContact, confirmSubscribe, notifyCareer, notifyContact } from '../modules/email/email.service.js'
 
 const kinds = ['service', 'employee', 'project', 'career', 'about'] as const
 const kindSchema = z.enum(kinds)
@@ -34,24 +34,38 @@ const applicationValidation = z.object({ body: z.object({
   careerId: idSchema, name: z.string().trim().min(2).max(120), email: z.string().email().max(254),
   phone: z.string().trim().max(40).optional(), resumeUrl: z.string().url().max(1000).optional(), coverLetter: z.string().trim().max(10000).optional(),
 }), params: z.object({}), query: z.object({}) })
+const subscribeValidation = z.object({ body: z.object({
+  email: z.string().email().max(254),
+}), params: z.object({}), query: z.object({}) })
 const statusValidation = z.object({ body: z.object({ status: z.string().min(1).max(30) }), params: z.object({ id: idSchema }), query: z.object({}) })
 
 const router = Router()
 
-async function logEmailFailures(recordId: string, operations: [string, Promise<void>][]): Promise<void> {
+type EmailDelivery = 'sent' | 'failed'
+
+function deliveryOf(result: PromiseSettledResult<void>): EmailDelivery {
+  return result.status === 'fulfilled' ? 'sent' : 'failed'
+}
+
+async function logEmailFailures(recordId: string, operations: [string, Promise<void>][]): Promise<Record<string, EmailDelivery>> {
   const results = await Promise.allSettled(operations.map(([, operation]) => operation))
+  const delivery: Record<string, EmailDelivery> = {}
   for (const [index, result] of results.entries()) {
+    const operation = operations[index]?.[0] ?? 'email_notification'
+    delivery[operation] = deliveryOf(result)
     if (result.status === 'rejected') {
       const error = result.reason
       logger.warn({
-        operation: operations[index]?.[0] ?? 'email_notification',
+        operation,
         recordId,
         reason: error instanceof Error ? error.message : 'Provider request failed',
         providerCode: typeof error === 'object' && error !== null && 'providerCode' in error ? error.providerCode : undefined,
         responseCode: typeof error === 'object' && error !== null && 'responseCode' in error ? error.responseCode : undefined,
+        hint: 'Check SMTP_USER, SMTP_PASSWORD and ADMIN_NOTIFICATION_EMAIL in backend/.env, then run npm run email:test.',
       }, 'Email notification was not sent')
     }
   }
+  return delivery
 }
 
 async function listContent(kind: typeof kinds[number], page: number, limit: number, search?: string, admin = false) {
@@ -79,11 +93,36 @@ for (const kind of kinds) {
 router.post('/contact', publicRateLimit, validate(contactValidation), asyncHandler(async (request, response) => {
   const record = await Contact.create(request.body)
   const submittedAt = record.createdAt.toISOString()
-  await logEmailFailures(record.id, [
-    ['admin_contact_notification', notifyContact({ ...request.body, submittedAt })],
-    ['contact_confirmation', confirmContact({ ...request.body, submittedAt })],
+  const delivery = await logEmailFailures(record.id, [
+    ['admin_contact_notification', notifyContact({ ...request.body, submittedAt, reference: record.id })],
+    ['contact_confirmation', confirmContact({ ...request.body, submittedAt, reference: record.id })],
   ])
-  sendSuccess(response, 201, 'Contact inquiry submitted', { id: record.id })
+  sendSuccess(response, 201, 'Contact inquiry submitted', {
+    id: record.id,
+    email: {
+      admin: delivery.admin_contact_notification ?? 'failed',
+      confirmation: delivery.contact_confirmation ?? 'failed',
+    },
+  })
+}))
+router.post('/subscribe', publicRateLimit, validate(subscribeValidation), asyncHandler(async (request, response) => {
+  const { email } = request.body as { email: string }
+  const subscribedAt = new Date().toISOString()
+  const [confirmation] = await Promise.allSettled([
+    confirmSubscribe({ email, subscribedAt }),
+  ])
+  const sent = confirmation.status === 'fulfilled'
+  if (!sent) {
+    const error = confirmation.reason
+    logger.warn({
+      operation: 'subscribe_confirmation',
+      email,
+      reason: error instanceof Error ? error.message : 'Provider request failed',
+      providerCode: typeof error === 'object' && error !== null && 'providerCode' in error ? error.providerCode : undefined,
+      responseCode: typeof error === 'object' && error !== null && 'responseCode' in error ? error.responseCode : undefined,
+    }, 'Newsletter confirmation was not sent')
+  }
+  sendSuccess(response, 201, sent ? 'Subscribed — confirmation email sent' : 'Subscribed, but the confirmation email could not be sent', { email, delivery: sent ? 'sent' : 'failed' })
 }))
 router.post('/applications', publicRateLimit, validate(applicationValidation), asyncHandler(async (request, response) => {
   const body = request.body as { careerId: string }
@@ -91,11 +130,17 @@ router.post('/applications', publicRateLimit, validate(applicationValidation), a
   if (!career) throw new AppError(404, 'Job opening not found')
   const record = await Application.create(body)
   const submittedAt = record.createdAt.toISOString()
-  await logEmailFailures(record.id, [
-    ['admin_career_notification', notifyCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt })],
-    ['career_confirmation', confirmCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt })],
+  const delivery = await logEmailFailures(record.id, [
+    ['admin_career_notification', notifyCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt, reference: record.id })],
+    ['career_confirmation', confirmCareer({ applicantName: record.name, applicantEmail: record.email, jobTitle: career.title, applicationId: record.id, submittedAt, reference: record.id })],
   ])
-  sendSuccess(response, 201, 'Application submitted', { id: record.id })
+  sendSuccess(response, 201, 'Application submitted', {
+    id: record.id,
+    email: {
+      admin: delivery.admin_career_notification ?? 'failed',
+      confirmation: delivery.career_confirmation ?? 'failed',
+    },
+  })
 }))
 
 const admin = Router()
