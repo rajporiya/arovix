@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { CSSProperties } from 'react'
 import { Button } from '../../components/sections/SectionButton'
+import servicesImage from '../../assets/services.webp'
 import { serviceFaqs, services } from './services.data'
 import './services.css'
 
@@ -18,7 +19,7 @@ export function ServicesPage({ navigate }: { navigate: (path: string) => void })
           <p className="services-hero-lede">Strategy, design, and engineering for teams building products people choose to use.</p>
           <Button navigate={navigate} path="/contact">Start a conversation <span>↗</span></Button>
         </div>
-        <div className="services-hero-orbit" aria-hidden="true"><div /><div /><div /></div>
+        <img className="services-hero-image" src={servicesImage} alt="" />
         <p className="services-hero-meta">Arovix / Capabilities / 2026</p>
       </section>
 

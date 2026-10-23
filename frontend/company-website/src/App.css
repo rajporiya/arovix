@@ -3,7 +3,7 @@
   --paper: #f2f1ec;
   --violet: #a59dff;
   --line: rgba(242, 241, 236, 0.18);
-  --mono: "DM Mono", monospace;
+  --mono: "Inter", sans-serif;
 }
 .header {
   align-items: center;
@@ -322,6 +322,18 @@ h2 i {
   font-size: clamp(1.2rem, 2vw, 1.6rem);
   max-width: 650px;
 }
+.page-hero {
+  align-items: center;
+  display: grid;
+  gap: 4rem;
+  grid-template-columns: 1fr 1fr;
+}
+.page-hero-image {
+  border-radius: 1rem;
+  display: block;
+  height: auto;
+  width: 100%;
+}
 .listing {
   margin-top: 7rem;
 }
@@ -523,6 +535,9 @@ h2 i {
   }
   .page {
     padding: 9rem 1.5rem 6rem;
+  }
+  .page-hero {
+    grid-template-columns: 1fr;
   }
   .listing {
     margin-top: 4rem;
@@ -882,7 +897,7 @@ h2 i {
   padding: 0.45rem 0.8rem;
 }
 .services-intro h1 {
-  font-family: "Manrope", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: clamp(2.2rem, 5vw, 4.6rem);
   letter-spacing: -0.08em;
   line-height: 1;
@@ -918,7 +933,7 @@ h2 i {
   order: 1;
 }
 .service-copy {
-  font-family: "Manrope", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 .service-icon {
   align-items: center;
@@ -1004,13 +1019,13 @@ h2 i {
   width: 0.2rem;
 }
 .service-module h3 {
-  font-family: "Manrope", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.62rem;
   letter-spacing: 0.02em;
 }
 .service-module p {
   color: #777;
-  font-family: "Manrope", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 0.5rem;
   line-height: 1.6;
 }
@@ -1021,7 +1036,7 @@ h2 i {
   text-align: center;
 }
 .services-faq h2 {
-  font-family: "Manrope", sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 1.55rem;
   letter-spacing: -0.06em;
   margin: 0.7rem 0 0.3rem;

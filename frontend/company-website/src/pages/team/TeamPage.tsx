@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { PageShell } from '../../components/shared/PageShell'
 import { ScrollReveal } from '../../components/shared/ScrollReveal'
 import { Button } from '../../components/sections/SectionButton'
+import bannerImage from '../../assets/banner.webp'
 import './team.css'
 
 interface Member {
@@ -86,6 +87,7 @@ export function TeamPage({ navigate }: { navigate: (path: string) => void }) {
   return (
     <PageShell
       title={<>People make<br /><i>the difference.</i></>}
+      image={bannerImage}
       intro="A close-knit, cross-functional team of engineers, designers, and strategists — grouped by craft, spread across the globe. Real people, thoughtful work."
     >
       <ScrollReveal>
