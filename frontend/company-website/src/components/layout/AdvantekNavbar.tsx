@@ -55,9 +55,9 @@ export function AdvantekNavbar({ path, navigate }: NavProps) {
           type="button"
         >
           <div className="adv-brand-logo">
-            <img src={appLogo} alt="BrainyBeam logo" />
+            <img src={appLogo} alt="Arovix logo" />
           </div>
-          <span className="adv-brand-text">Advantek</span>
+          <span className="adv-brand-text">Arovix</span>
         </button>
 
         <nav className="adv-nav-desktop">

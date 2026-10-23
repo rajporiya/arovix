@@ -1,4 +1,4 @@
-# BrainyBeam Developer Guide
+# Arovix Developer Guide
 
 This document explains the repository structure, application flow, local setup, and
 the usual places to make changes. It is intended for a developer joining the
@@ -6,7 +6,7 @@ project.
 
 ## 1. Project overview
 
-BrainyBeam is a company website with two separate applications:
+Arovix is a company website with two separate applications:
 
 - `frontend/company-website`: React, TypeScript, and Vite website.
 - `backend`: Node.js, Express, TypeScript, MongoDB, Redis, and REST APIs.

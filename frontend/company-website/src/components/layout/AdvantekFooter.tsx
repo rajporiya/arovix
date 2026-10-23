@@ -19,7 +19,7 @@ export function AdvantekFooter({ navigate }: FooterProps) {
           <div className="adv-footer-brand">
             <div className="adv-footer-brand-header">
               <div className="adv-brand-logo">
-                <img src={appLogo} alt="BrainyBeam logo" />
+                <img src={appLogo} alt="Arovix logo" />
               </div>
               <span className="adv-footer-brand-name">Advantek</span>
             </div>

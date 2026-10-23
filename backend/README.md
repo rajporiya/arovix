@@ -1,4 +1,4 @@
-# BrainyBeam backend
+# Arovix backend
 
 Secure, modular REST API for the company website. It uses Node.js, Express, TypeScript, MongoDB/Mongoose, Redis, Zod, JWT cookies, Pino, and rate limiting.
 

@@ -19,7 +19,7 @@ export function ServicesPage({ navigate }: { navigate: (path: string) => void })
           <Button navigate={navigate} path="/contact">Start a conversation <span>↗</span></Button>
         </div>
         <div className="services-hero-orbit" aria-hidden="true"><div /><div /><div /></div>
-        <p className="services-hero-meta">BrainyBeam / Capabilities / 2026</p>
+        <p className="services-hero-meta">Arovix / Capabilities / 2026</p>
       </section>
 
       <section className="services-introduction">

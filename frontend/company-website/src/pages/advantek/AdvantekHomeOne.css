@@ -767,6 +767,15 @@
   font-size: 1.15rem;
 }
 
+.adv-project-link {
+  display: block;
+  margin-bottom: 0.55rem;
+  color: #a7b7ff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
 .adv-project-card-footer p {
   margin: 0;
   color: rgba(255, 255, 255, 0.62);

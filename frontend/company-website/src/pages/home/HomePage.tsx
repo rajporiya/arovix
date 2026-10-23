@@ -23,7 +23,7 @@ export function HomePage({ navigate }: { navigate: (path: string) => void }) {
         <div>
           <h2>Ideas that move<br /><em>people forward.</em></h2>
           <p>We combine strategy, design, and technology to create digital experiences that feel clear, useful, and unmistakably yours.</p>
-          <Button navigate={navigate} path="/about" dark>More about BrainyBeam <span>→</span></Button>
+          <Button navigate={navigate} path="/about" dark>More about Arovix <span>→</span></Button>
         </div>
       </section>
     </ScrollReveal>

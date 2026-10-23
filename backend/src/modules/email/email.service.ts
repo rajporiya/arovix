@@ -54,7 +54,7 @@ async function sendEmail(to: string, content: MailContent): Promise<void> {
       socketTimeout: REQUEST_TIMEOUT_MS,
     })
     await transport.sendMail({
-      from: `"BrainyBeam" <${env.SMTP_USER}>`,
+      from: `"Arovix" <${env.SMTP_USER}>`,
       to,
       subject: content.subject,
       text: content.text,
@@ -79,7 +79,7 @@ export async function notifyContact(data: ContactEmailData): Promise<void> {
       ['Message', data.message],
       ['Submitted at', data.submittedAt],
     ],
-    'Sent from the BrainyBeam website contact form.',
+    'Sent from the Arovix website contact form.',
   )
   await sendEmail(env.ADMIN_NOTIFICATION_EMAIL, { ...content, subject: `New contact inquiry: ${data.subject}` })
 }
@@ -92,7 +92,7 @@ export async function confirmContact(data: ContactEmailData): Promise<void> {
       ['Message', data.message],
       ['Submitted at', data.submittedAt],
     ],
-    'We will get back to you shortly. — The BrainyBeam team',
+    'We will get back to you shortly. — The Arovix team',
   )
   await sendEmail(data.email, { ...content, subject: `We received your message: ${data.subject}` })
 }
@@ -108,7 +108,7 @@ export async function notifyCareer(data: CareerEmailData): Promise<void> {
       ['Application ID', data.applicationId],
       ['Submitted at', data.submittedAt],
     ],
-    'Sent from the BrainyBeam website careers page.',
+    'Sent from the Arovix website careers page.',
   )
   await sendEmail(env.ADMIN_NOTIFICATION_EMAIL, { ...content, subject: `New application for ${data.jobTitle}` })
 }
@@ -121,7 +121,7 @@ export async function confirmCareer(data: CareerEmailData): Promise<void> {
       ['Application ID', data.applicationId],
       ['Submitted at', data.submittedAt],
     ],
-    'Thank you for your interest in BrainyBeam. We will review your application soon.',
+    'Thank you for your interest in Arovix. We will review your application soon.',
   )
   await sendEmail(data.applicantEmail, { ...content, subject: `We received your application for ${data.jobTitle}` })
 }

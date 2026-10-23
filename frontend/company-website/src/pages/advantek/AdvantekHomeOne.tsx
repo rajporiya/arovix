@@ -365,6 +365,7 @@ export function AdvantekHomeOne({ navigate }: HomeProps) {
                 <div className="adv-project-card-footer">
                   <div>
                     <h3>{project.name}</h3>
+                    <span className="adv-project-link">{project.href.replace(/^https?:\/\//, '')}</span>
                     <p>{project.description}</p>
                   </div>
                   <ExternalLink size={18} aria-hidden="true" />

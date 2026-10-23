@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Production API for the BrainyBeam company website",
+  "description": "Production API for the Arovix company website",
   "type": "module",
   "main": "dist/server.js",
   "scripts": {

@@ -10,7 +10,7 @@ export const authenticate: RequestHandler = (request, _response, next) => {
   const token = header?.startsWith('Bearer ') ? header.slice(7) : request.cookies?.[accessCookie]
   if (!token) return next(new AppError(401, 'Authentication required'))
   try {
-    const payload = jwt.verify(token, env.JWT_ACCESS_SECRET, { algorithms: ['HS256'], issuer: 'brainybeam-api', audience: 'brainybeam-admin' })
+    const payload = jwt.verify(token, env.JWT_ACCESS_SECRET, { algorithms: ['HS256'], issuer: 'arovix-api', audience: 'arovix-admin' })
     if (typeof payload === 'string' || !payload.sub || typeof payload.email !== 'string' || typeof payload.role !== 'string') {
       return next(new AppError(401, 'Invalid authentication token'))
     }

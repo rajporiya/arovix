@@ -47,7 +47,7 @@ describe('SMTP email service', () => {
     expect(createTransportMock).toHaveBeenCalledWith(expect.objectContaining({ service: 'gmail' }))
     expect(sendMailMock).toHaveBeenCalledOnce()
     expect(sendMailMock.mock.calls[0]?.[0]).toMatchObject({
-      from: '"BrainyBeam" <sender@example.com>',
+      from: '"Arovix" <sender@example.com>',
       to: 'admin@example.com',
       subject: 'Hello',
       text: 'Plain body',
