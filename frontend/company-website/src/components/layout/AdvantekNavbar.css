@@ -45,6 +45,13 @@
   justify-content: center;
 }
 
+.adv-brand-logo img {
+  width: 32px;
+  height: 32px;
+  display: block;
+  object-fit: contain;
+}
+
 .adv-brand-text {
   font-family: 'Sora', sans-serif;
   letter-spacing: -0.02em;
@@ -142,8 +149,8 @@
 .adv-cta-btn:hover,
 .adv-cta-btn:focus-visible {
   color: #fff;
+  background: #4f46e5;
   outline: none;
-  box-shadow: 0 10px 24px rgba(91, 81, 177, 0.25);
 }
 
 .adv-cta-btn:hover .adv-cta-icon,

@@ -21,6 +21,13 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+.adv-footer-brand-header .adv-brand-logo img {
+  width: 36px;
+  height: 36px;
+  display: block;
+  object-fit: contain;
   margin-bottom: 1rem;
 }
 

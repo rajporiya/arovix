@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
+import appLogo from '../../assets/app-logo.png'
 import './AdvantekNavbar.css'
 
 interface NavProps {
@@ -54,15 +55,7 @@ export function AdvantekNavbar({ path, navigate }: NavProps) {
           type="button"
         >
           <div className="adv-brand-logo">
-            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-              <path d="M16 2L4 8V24L16 30L28 24V8L16 2Z" fill="url(#grad)" stroke="url(#grad)" strokeWidth="1.5"/>
-              <defs>
-                <linearGradient id="grad" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#6366f1"/>
-                  <stop offset="1" stopColor="#8b5cf6"/>
-                </linearGradient>
-              </defs>
-            </svg>
+            <img src={appLogo} alt="BrainyBeam logo" />
           </div>
           <span className="adv-brand-text">Advantek</span>
         </button>

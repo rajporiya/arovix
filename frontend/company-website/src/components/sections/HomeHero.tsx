@@ -15,7 +15,7 @@ export function HomeHero({ navigate }: { navigate: (path: string) => void }) {
     </div>
     <div className="landing-browser-scene" aria-hidden="true">
       <div className="browser-preview browser-preview-left"><div className="browser-top"><i /><i /><i /></div><div className="preview-lines"><b /><b /><b /></div><div className="preview-pill" /></div>
-      <div className="browser-preview browser-preview-main"><div className="browser-top"><i /><i /><i /><span>AROVIX / DIGITAL PRODUCTS</span></div><div className="preview-main-content"><small>01 / INTRODUCTION</small><h2>We build<br /><em>better things.</em></h2><div className="preview-person" /><div className="preview-button" /></div></div>
+      <div className="browser-preview browser-preview-main"><div className="browser-top"><i /><i /><i /><span>BRAINYBEAM / DIGITAL PRODUCTS</span></div><div className="preview-main-content"><small>01 / INTRODUCTION</small><h2>We build<br /><em>better things.</em></h2><div className="preview-person" /><div className="preview-button" /></div></div>
       <div className="browser-preview browser-preview-right"><div className="browser-top"><i /><i /><i /></div><div className="preview-card"><span>100%</span><b>Useful<br />by design</b></div><div className="preview-mini-grid"><i /><i /><i /></div></div>
     </div>
     <p className="landing-scroll">Scroll to explore <span>↓</span></p>

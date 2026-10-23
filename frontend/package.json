@@ -1,5 +1,5 @@
 {
-  "name": "arovix-frontend",
+  "name": "brainybeam-frontend",
   "private": true,
   "scripts": {
     "dev": "npm --prefix company-website run dev",

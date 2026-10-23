@@ -17,8 +17,8 @@ const credentials = z.object({ body: z.object({ email: z.string().email().max(25
 const emptyRequest = z.object({ body: z.object({}), query: z.object({}), params: z.object({}) })
 const hash = (value: string) => crypto.createHash('sha256').update(value).digest('hex')
 const tokens = (id: string, email: string, role: string) => ({
-  access: jwt.sign({ email, role }, env.JWT_ACCESS_SECRET, { subject: id, expiresIn: env.ACCESS_TOKEN_TTL as jwt.SignOptions['expiresIn'], issuer: 'arovix-api', audience: 'arovix-admin' }),
-  refresh: jwt.sign({}, env.JWT_REFRESH_SECRET, { subject: id, expiresIn: env.REFRESH_TOKEN_TTL as jwt.SignOptions['expiresIn'], issuer: 'arovix-api', audience: 'arovix-refresh' }),
+  access: jwt.sign({ email, role }, env.JWT_ACCESS_SECRET, { subject: id, expiresIn: env.ACCESS_TOKEN_TTL as jwt.SignOptions['expiresIn'], issuer: 'brainybeam-api', audience: 'brainybeam-admin' }),
+  refresh: jwt.sign({}, env.JWT_REFRESH_SECRET, { subject: id, expiresIn: env.REFRESH_TOKEN_TTL as jwt.SignOptions['expiresIn'], issuer: 'brainybeam-api', audience: 'brainybeam-refresh' }),
 })
 
 export const authRouter = Router()
@@ -35,7 +35,7 @@ authRouter.post('/refresh', authRateLimit, validate(emptyRequest), asyncHandler(
   const token = request.cookies?.[refreshCookie]
   if (!token) throw new AppError(401, 'Refresh authentication required')
   try {
-    const payload = jwt.verify(token, env.JWT_REFRESH_SECRET, { algorithms: ['HS256'], issuer: 'arovix-api', audience: 'arovix-refresh' })
+    const payload = jwt.verify(token, env.JWT_REFRESH_SECRET, { algorithms: ['HS256'], issuer: 'brainybeam-api', audience: 'brainybeam-refresh' })
     if (typeof payload === 'string' || !payload.sub) throw new Error('Invalid token')
     const admin = await Admin.findById(payload.sub).select('+refreshTokenHash')
     if (!admin?.refreshTokenHash || admin.refreshTokenHash !== hash(token)) throw new Error('Revoked token')

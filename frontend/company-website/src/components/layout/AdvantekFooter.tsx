@@ -1,4 +1,5 @@
 import { Mail } from 'lucide-react'
+import appLogo from '../../assets/app-logo.png'
 import './AdvantekFooter.css'
 
 interface FooterProps {
@@ -18,15 +19,7 @@ export function AdvantekFooter({ navigate }: FooterProps) {
           <div className="adv-footer-brand">
             <div className="adv-footer-brand-header">
               <div className="adv-brand-logo">
-                <svg width="36" height="36" viewBox="0 0 32 32" fill="none">
-                  <path d="M16 2L4 8V24L16 30L28 24V8L16 2Z" fill="url(#grad2)" stroke="url(#grad2)" strokeWidth="1.5"/>
-                  <defs>
-                    <linearGradient id="grad2" x1="4" y1="2" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#6366f1"/>
-                      <stop offset="1" stopColor="#8b5cf6"/>
-                    </linearGradient>
-                  </defs>
-                </svg>
+                <img src={appLogo} alt="BrainyBeam logo" />
               </div>
               <span className="adv-footer-brand-name">Advantek</span>
             </div>

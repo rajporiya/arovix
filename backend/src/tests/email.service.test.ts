@@ -1,72 +1,99 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { env } from '../config/env.js'
-import { sendTemplate } from '../modules/email/email.service.js'
+import { confirmContact, notifyContact, sendEmail } from '../modules/email/email.service.js'
+
+const { sendMailMock, createTransportMock } = vi.hoisted(() => ({
+  sendMailMock: vi.fn(),
+  createTransportMock: vi.fn(),
+}))
+
+vi.mock('nodemailer', () => ({
+  default: {
+    createTransport: createTransportMock,
+  },
+}))
 
 const originalConfig = {
-  service: env.EMAILJS_SERVICE_ID,
-  publicKey: env.EMAILJS_API_KEY,
-  privateKey: env.EMAILJS_PRIVATE_KEY,
+  service: env.SMTP_SERVICE,
+  user: env.SMTP_USER,
+  password: env.SMTP_PASSWORD,
   adminEmail: env.ADMIN_NOTIFICATION_EMAIL,
 }
 
 afterEach(() => {
-  vi.unstubAllGlobals()
-  env.EMAILJS_SERVICE_ID = originalConfig.service
-  env.EMAILJS_API_KEY = originalConfig.publicKey
-  env.EMAILJS_PRIVATE_KEY = originalConfig.privateKey
+  vi.clearAllMocks()
+  env.SMTP_SERVICE = originalConfig.service
+  env.SMTP_USER = originalConfig.user
+  env.SMTP_PASSWORD = originalConfig.password
   env.ADMIN_NOTIFICATION_EMAIL = originalConfig.adminEmail
 })
 
-function configureEmail() {
-  env.EMAILJS_SERVICE_ID = 'service_test'
-  env.EMAILJS_API_KEY = 'public_test'
-  env.EMAILJS_PRIVATE_KEY = 'private_test'
+function configureSmtp() {
+  createTransportMock.mockReturnValue({ sendMail: sendMailMock })
+  sendMailMock.mockResolvedValue({ accepted: ['admin@example.com'] })
+  env.SMTP_SERVICE = 'gmail'
+  env.SMTP_USER = 'sender@example.com'
+  env.SMTP_PASSWORD = 'app-password'
   env.ADMIN_NOTIFICATION_EMAIL = 'admin@example.com'
 }
 
-describe('EmailJS service', () => {
-  it('sends the documented REST payload without exposing credentials to callers', async () => {
-    configureEmail()
-    const fetchMock = vi.fn().mockResolvedValue(new Response('OK', { status: 200 }))
-    vi.stubGlobal('fetch', fetchMock)
+describe('SMTP email service', () => {
+  it('sends mail through the configured SMTP service without exposing credentials in the message', async () => {
+    configureSmtp()
 
-    await sendTemplate('template_contact', { name: 'Ada', message: 'Hello' })
+    await sendEmail('admin@example.com', { subject: 'Hello', text: 'Plain body', html: '<p>HTML body</p>' })
 
-    expect(fetchMock).toHaveBeenCalledOnce()
-    const request = fetchMock.mock.calls[0]?.[1] as RequestInit
-    expect(JSON.parse(String(request.body))).toMatchObject({
-      service_id: 'service_test',
-      template_id: 'template_contact',
-      user_id: 'public_test',
-      accessToken: 'private_test',
-      template_params: { name: 'Ada', message: 'Hello' },
+    expect(createTransportMock).toHaveBeenCalledOnce()
+    expect(createTransportMock).toHaveBeenCalledWith(expect.objectContaining({ service: 'gmail' }))
+    expect(sendMailMock).toHaveBeenCalledOnce()
+    expect(sendMailMock.mock.calls[0]?.[0]).toMatchObject({
+      from: '"BrainyBeam" <sender@example.com>',
+      to: 'admin@example.com',
+      subject: 'Hello',
+      text: 'Plain body',
+      html: '<p>HTML body</p>',
     })
+    expect(JSON.stringify(sendMailMock.mock.calls[0]?.[0])).not.toContain('app-password')
   })
 
-  it('rejects provider responses without returning provider details', async () => {
-    configureEmail()
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('private provider detail', { status: 403 })))
+  it('sends contact notifications to the administrator address', async () => {
+    configureSmtp()
 
-    await expect(sendTemplate('template_contact', { name: 'Ada' })).rejects.toThrow('Email provider rejected the request (403)')
+    await notifyContact({ name: 'Ada', email: 'ada@example.com', subject: 'Hello', message: 'Hi there', submittedAt: '2026-01-01T00:00:00.000Z' })
+
+    expect(sendMailMock).toHaveBeenCalledOnce()
+    expect(sendMailMock.mock.calls[0]?.[0]).toMatchObject({ to: 'admin@example.com', subject: 'New contact inquiry: Hello' })
   })
 
-  it('normalizes network timeouts', async () => {
-    configureEmail()
-    const abortError = new DOMException('The operation was aborted', 'AbortError')
-    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(abortError))
+  it('sends confirmations to the submitter', async () => {
+    configureSmtp()
 
-    await expect(sendTemplate('template_contact', { name: 'Ada' })).rejects.toThrow('Email provider request timed out')
+    await confirmContact({ name: 'Ada', email: 'ada@example.com', subject: 'Hello', message: 'Hi there', submittedAt: '2026-01-01T00:00:00.000Z' })
+
+    expect(sendMailMock).toHaveBeenCalledOnce()
+    expect(sendMailMock.mock.calls[0]?.[0]).toMatchObject({ to: 'ada@example.com' })
+  })
+
+  it('rejects provider errors without returning provider details', async () => {
+    configureSmtp()
+    sendMailMock.mockRejectedValue(new Error('Authentication failed: secret provider detail'))
+
+    await expect(sendEmail('admin@example.com', { subject: 'Hello', text: 'body', html: '<p>body</p>' })).rejects.toThrow('Email provider request failed')
+  })
+
+  it('normalizes SMTP timeouts', async () => {
+    configureSmtp()
+    sendMailMock.mockRejectedValue(Object.assign(new Error('Greeting never received'), { code: 'ETIMEDOUT' }))
+
+    await expect(sendEmail('admin@example.com', { subject: 'Hello', text: 'body', html: '<p>body</p>' })).rejects.toThrow('Email provider request timed out')
   })
 
   it('fails closed when required provider configuration is missing', async () => {
-    env.EMAILJS_SERVICE_ID = undefined
-    env.EMAILJS_API_KEY = undefined
-    env.EMAILJS_PRIVATE_KEY = undefined
-    env.ADMIN_NOTIFICATION_EMAIL = undefined
-    const fetchMock = vi.fn()
-    vi.stubGlobal('fetch', fetchMock)
+    createTransportMock.mockReturnValue({ sendMail: sendMailMock })
+    env.SMTP_USER = undefined
+    env.SMTP_PASSWORD = undefined
 
-    await expect(sendTemplate('template_contact', { name: 'Ada' })).rejects.toThrow('Email provider is not configured')
-    expect(fetchMock).not.toHaveBeenCalled()
+    await expect(sendEmail('admin@example.com', { subject: 'Hello', text: 'body', html: '<p>body</p>' })).rejects.toThrow('Email provider is not configured')
+    expect(sendMailMock).not.toHaveBeenCalled()
   })
 })
