@@ -1,0 +1,80 @@
+import { useState } from 'react'
+import type { CSSProperties } from 'react'
+import { Button } from '../../components/sections/SectionButton'
+import servicesImage from '../../assets/services.webp'
+import { serviceFaqs, services } from './services.data'
+import './services.css'
+
+export function ServicesPage({ navigate }: { navigate: (path: string) => void }) {
+  const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const technologies = [...new Set(services.flatMap((service) => service.technologies))]
+
+  return (
+    <div className="services-page">
+      <section className="services-hero">
+        <div className="services-hero-grid" />
+        <div className="services-hero-copy">
+          <p className="services-eyebrow"><span /> What we do</p>
+          <h1>Digital craft for<br /><em>real momentum.</em></h1>
+          <p className="services-hero-lede">Strategy, design, and engineering for teams building products people choose to use.</p>
+          <Button navigate={navigate} path="/contact">Start a conversation <span>↗</span></Button>
+        </div>
+        <img className="services-hero-image" src={servicesImage} alt="" />
+        <p className="services-hero-meta">Arovix / Capabilities / 2026</p>
+      </section>
+
+      <section className="services-introduction">
+        <p className="services-index">01 / Capabilities</p>
+        <div>
+          <h2>Good technology is<br /><em>felt, not explained.</em></h2>
+          <p>We bring clarity to complex challenges and turn ideas into reliable digital products. Every engagement is shaped around your team, your users, and the next meaningful step.</p>
+        </div>
+      </section>
+
+      <section className="services-tech">
+        <div className="services-tech-copy"><p className="services-index">02 / Technology</p><h2>Everything you need<br /><em>to build better.</em></h2><p>Our toolkit stays flexible so the right technology serves the idea, not the other way around.</p></div>
+        <div className="technology-cloud">{technologies.map((technology, index) => <span className={`tech-orbit tech-orbit-${index % 4}`} key={technology}>{technology}</span>)}</div>
+      </section>
+
+      <section className="services-catalog">
+        <div className="services-catalog-heading">
+          <div><p className="services-index">03 / Expertise</p><h2>Built to move<br /><em>with you.</em></h2></div>
+          <p>Explore the capabilities we bring together to take a product from possibility to progress.</p>
+        </div>
+        <div className="service-catalog-grid">
+          {services.map((service) => (
+            <article className="service-tile" key={service.title} style={{ '--service-accent': service.accent } as CSSProperties}>
+              <div className="service-tile-top"><span className="service-tile-icon">{service.icon}</span><span className="service-tile-eyebrow">{service.eyebrow}</span></div>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+              <ul>{service.points.map((point) => <li key={point}>{point}</li>)}</ul>
+              <div className="service-tile-bottom">
+                <div>{service.technologies.map((technology) => <span key={technology}>{technology}</span>)}</div>
+                <button className="service-tile-button" type="button" onClick={() => navigate(`/services/${service.slug}`)} aria-label={`Explore ${service.title}`}>
+                  Explore service <span aria-hidden="true">↗</span>
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="services-process">
+        <p className="services-index">04 / How we work</p>
+        <div className="services-process-layout"><h2>Less theatre.<br /><em>More progress.</em></h2><div className="process-steps"><div><span>01</span><h3>Understand</h3><p>We learn the context before suggesting the answer.</p></div><div><span>02</span><h3>Make</h3><p>We move from a clear direction to useful, testable work.</p></div><div><span>03</span><h3>Improve</h3><p>We keep learning, refining, and making the product stronger.</p></div></div></div>
+      </section>
+
+      <section className="services-faq-new">
+        <div><p className="services-index">05 / FAQ</p><h2>Questions worth<br /><em>asking.</em></h2></div>
+        <div className="faq-stack">{serviceFaqs.map(([question, answer], index) => <div className={`faq-card ${openFaq === index ? 'faq-card-open' : ''}`} key={question}><button type="button" onClick={() => setOpenFaq(openFaq === index ? null : index)} aria-expanded={openFaq === index}><span>{question}</span><b>{openFaq === index ? '−' : '+'}</b></button>{openFaq === index && <p>{answer}</p>}</div>)}</div>
+      </section>
+
+      <section className="services-showcase">
+        <p className="services-index">06 / How it looks</p><h2>Designed for<br /><em>every screen.</em></h2>
+        <div className="showcase-grid"><div className="showcase-window showcase-window-large"><div className="window-bar"><i /><i /><i /></div><div className="window-content"><span>01</span><h3>Clear ideas.<br /><em>Beautifully built.</em></h3><div /></div></div><div className="showcase-window showcase-window-small"><div className="window-bar"><i /><i /><i /></div><div className="window-lines"><b /><b /><b /></div></div><div className="showcase-note">A considered system from first touchpoint to final detail.</div></div>
+      </section>
+
+      <section className="services-cta"><p className="services-eyebrow"><span /> Have a challenge?</p><h2>Let&apos;s make the<br /><em>next move.</em></h2><Button navigate={navigate} path="/contact" dark>Talk to our team <span>↗</span></Button></section>
+    </div>
+  )
+}

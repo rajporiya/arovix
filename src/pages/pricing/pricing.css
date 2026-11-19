@@ -1,0 +1,230 @@
+.pricing-page {
+  --pricing-ink: #20223c;
+  --pricing-muted: #686b81;
+  background: #f7f8fc;
+  color: var(--pricing-ink);
+  font-family: 'Inter', sans-serif;
+}
+
+.pricing-shell { margin: 0 auto; max-width: 1280px; width: 100%; }
+
+.pricing-eyebrow {
+  align-items: center;
+  color: #8d90a4;
+  display: flex;
+  font: .62rem var(--mono);
+  gap: .65rem;
+  letter-spacing: .12em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.pricing-eyebrow span { background: #a59dff; border-radius: 50%; height: .45rem; width: .45rem; }
+.pricing-index { color: #8d90a4; font: .58rem var(--mono); letter-spacing: .1em; margin: 0 0 1.4rem; text-transform: uppercase; }
+
+.pricing-hero { background: #eef2ff; padding: 9rem 8vw 5rem; }
+
+.pricing-hero-layout {
+  align-items: end;
+  display: grid;
+  gap: 5rem;
+  grid-template-columns: 1.2fr 1fr;
+  margin-top: 3rem;
+}
+
+.pricing-hero h1 {
+  color: var(--pricing-ink);
+  font-size: clamp(3.8rem, 7vw, 7rem);
+  letter-spacing: -.1em;
+  line-height: .9;
+  margin: 0;
+}
+
+.pricing-hero h1 em { color: #6c5bd4; font-style: normal; }
+.pricing-hero-layout > div > p { color: #5f6278; font-size: 1rem; line-height: 1.75; margin: 0; max-width: 460px; }
+.pricing-hero-layout .pricing-note { border-top: 1px solid rgba(90, 86, 130, .16); color: #71748a; font-size: .78rem; margin-top: 1.4rem; padding-top: 1.2rem; }
+
+.pricing-plans { padding: 0 8vw 6rem; }
+
+.pricing-grid {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: -2px;
+}
+
+.pricing-card {
+  background: #fff;
+  border: 1px solid #e4e3ef;
+  border-radius: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  padding: 1.8rem;
+  transition: border-color .3s, box-shadow .3s, transform .3s;
+}
+
+.pricing-card:hover { border-color: #c9c4e8; box-shadow: 0 22px 45px rgba(76, 70, 120, .1); transform: translateY(-5px); }
+
+.pricing-card-featured {
+  background: #20223c;
+  border-color: #20223c;
+  color: #fff;
+}
+
+.pricing-card-featured:hover { border-color: #6c62c9; box-shadow: 0 24px 50px rgba(43, 40, 84, .25); }
+
+.pricing-card-top { align-items: center; display: flex; gap: 1rem; justify-content: space-between; }
+
+.pricing-tag {
+  background: #f0effe;
+  border-radius: 999px;
+  color: #6759c7;
+  font: .54rem var(--mono);
+  letter-spacing: .06em;
+  padding: .4rem .65rem;
+  text-transform: uppercase;
+}
+
+.pricing-card-featured .pricing-tag { background: rgba(165, 157, 255, .18); color: #cfc8ff; }
+.pricing-duration { color: #8d90a4; font: .58rem var(--mono); }
+.pricing-card-featured .pricing-duration { color: #a9aac0; }
+
+.pricing-card h2 {
+  color: var(--pricing-ink);
+  font-size: 1.75rem;
+  letter-spacing: -.06em;
+  margin: 3rem 0 .8rem;
+}
+
+.pricing-card-featured h2 { color: #fff; }
+.pricing-intro { color: var(--pricing-muted); font-size: .82rem; line-height: 1.7; margin: 0; min-height: 3.4rem; }
+.pricing-card-featured .pricing-intro { color: #b0b1c4; }
+
+.pricing-card ul {
+  border-top: 1px solid #ecebf4;
+  list-style: none;
+  margin: 1.5rem 0 2rem;
+  padding: 0;
+}
+
+.pricing-card-featured ul { border-color: rgba(255, 255, 255, .14); }
+
+.pricing-card li { color: #55586f; font-size: .76rem; line-height: 1.5; padding: .55rem 0 .55rem 1.35rem; position: relative; }
+.pricing-card li::before { color: #7d62df; content: '↗'; left: 0; position: absolute; }
+.pricing-card-featured li { color: #c4c5d4; }
+.pricing-card-featured li::before { color: #a59dff; }
+
+.pricing-card > button {
+  align-items: center;
+  background: #f0effe;
+  border: 1px solid #e0dcf8;
+  border-radius: 999px;
+  color: #4c4290;
+  cursor: pointer;
+  display: flex;
+  font-size: .75rem;
+  font-weight: 600;
+  gap: .6rem;
+  justify-content: space-between;
+  margin-top: auto;
+  padding: .8rem 1rem;
+  transition: background .25s, border-color .25s, color .25s, transform .25s;
+}
+
+.pricing-card > button:hover { background: #e4e0ff; border-color: #cfc8ff; transform: translateY(-2px); }
+.pricing-card-featured > button { background: #a59dff; border-color: #a59dff; color: #20223c; }
+.pricing-card-featured > button:hover { background: #fff; border-color: #fff; }
+
+.pricing-included { background: #fff; padding: 6.5rem 8vw; }
+.pricing-included-head { align-items: end; display: flex; gap: 3rem; justify-content: space-between; }
+
+.pricing-included h2,
+.pricing-process h2,
+.pricing-cta h2 {
+  color: var(--pricing-ink);
+  font-size: clamp(2.6rem, 4.8vw, 5.2rem);
+  letter-spacing: -.1em;
+  line-height: .94;
+  margin: 0;
+}
+
+.pricing-included h2 em,
+.pricing-process h2 em { color: #6c5bd4; font-style: normal; }
+
+.pricing-included-grid {
+  border-top: 1px solid #e9e9f1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 3rem;
+}
+
+.pricing-included-grid > div { border-right: 1px solid #e9e9f1; padding: 2rem 1.5rem 0 0; }
+.pricing-included-grid > div + div { padding-left: 1.5rem; }
+.pricing-included-grid > div:last-child { border-right: 0; }
+.pricing-included-grid span { color: #8d90a4; font: .55rem var(--mono); }
+.pricing-included-grid h3 { color: var(--pricing-ink); font-size: 1rem; letter-spacing: -.03em; margin: 2.2rem 0 .6rem; }
+.pricing-included-grid p { color: var(--pricing-muted); font-size: .76rem; line-height: 1.65; margin: 0; }
+
+.pricing-process { background: #282936; color: #fff; padding: 6.5rem 8vw; }
+.pricing-process .pricing-index { color: #8b8d9f; }
+.pricing-process h2 { color: #fff; }
+.pricing-process h2 em { color: #a59dff; }
+.pricing-process-layout { display: grid; gap: 6rem; grid-template-columns: 1fr 1.1fr; }
+
+.pricing-steps { border-top: 1px solid rgba(255, 255, 255, .16); }
+.pricing-steps > div { border-bottom: 1px solid rgba(255, 255, 255, .16); display: grid; gap: 1rem; grid-template-columns: 3rem 1fr 1.4fr; padding: 1.5rem 0; }
+.pricing-steps span { color: #a59dff; font: .62rem var(--mono); }
+.pricing-steps h3 { color: #f7f6ff; font-size: 1rem; margin: 0; }
+.pricing-steps p { color: #9496a8; font-size: .78rem; line-height: 1.6; margin: 0; }
+
+.pricing-cta { background: #f0effe; padding: 5.5rem 8vw; }
+.pricing-cta-layout { align-items: end; display: flex; gap: 4rem; justify-content: space-between; }
+.pricing-cta h2 { margin-top: 1.5rem; }
+.pricing-cta h2 em { color: #6c5bd4; font-style: normal; }
+
+.pricing-cta-layout > button {
+  align-items: center;
+  background: #262746;
+  border: 1px solid #262746;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: .78rem;
+  font-weight: 600;
+  gap: 1rem;
+  padding: .95rem 1.35rem;
+  transition: background .25s, border-color .25s, box-shadow .25s, transform .25s;
+}
+
+.pricing-cta-layout > button:hover { background: #6c62c9; border-color: #6c62c9; box-shadow: 0 12px 28px rgba(80, 71, 156, .25); transform: translateY(-3px); }
+
+@media (max-width: 1000px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card { max-width: none; }
+  .pricing-included-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-included-grid > div:nth-child(2) { border-right: 0; }
+  .pricing-included-grid > div:nth-child(n + 3) { border-top: 1px solid #e9e9f1; margin-top: 2rem; }
+  .pricing-process-layout { gap: 3rem; grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .pricing-hero { padding: 7rem 1.25rem 4rem; }
+  .pricing-hero-layout { display: block; }
+  .pricing-hero-layout > div { margin-top: 2rem; }
+  .pricing-plans { padding: 0 1.25rem 4.5rem; }
+  .pricing-included,
+  .pricing-process,
+  .pricing-cta { padding: 4.5rem 1.25rem; }
+  .pricing-included-head { align-items: start; display: block; }
+  .pricing-included-grid { grid-template-columns: 1fr; }
+  .pricing-included-grid > div { border-right: 0; padding: 1.5rem 0; }
+  .pricing-included-grid > div + div { padding-left: 0; }
+  .pricing-included-grid > div:nth-child(2) { border-top: 1px solid #e9e9f1; margin-top: 0; }
+  .pricing-included-grid > div:nth-child(n + 3) { margin-top: 0; }
+  .pricing-steps > div { gap: .6rem; grid-template-columns: 2.2rem 1fr; }
+  .pricing-steps p { grid-column: 2; }
+  .pricing-cta-layout { align-items: start; display: block; }
+  .pricing-cta-layout > button { margin-top: 2rem; width: 100%; justify-content: center; }
+}

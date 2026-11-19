@@ -1,0 +1,34 @@
+/* ScrollReveal base — prepare the element for a transform/opacity transition.
+   Initial state is "hidden" (slightly below + transparent) so content is
+   revealed as you scroll down. */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(48px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+/* Visible: element has slid up into place and is fully opaque. */
+.scroll-reveal--in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hidden/leaving: element slides DOWN and fades away.
+   This is what gives the "scroll down → data drops down and disappears"
+   feel when a block scrolls out of the viewport. */
+.scroll-reveal--out {
+  opacity: 0;
+  transform: translateY(48px);
+}
+
+/* Respect users who prefer reduced motion — show everything, no animation. */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

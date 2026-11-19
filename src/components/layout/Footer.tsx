@@ -1,0 +1,3 @@
+export function Footer({ navigate }: { navigate: (path: string) => void }) {
+  return <footer className="footer"><div><button className="brand footer-brand" type="button" onClick={() => navigate('/')}><b>↗</b> AROVIX</button><p>Ideas into impact.</p></div><div className="footer-nav"><button type="button" onClick={() => navigate('/services')}>Services</button><button type="button" onClick={() => navigate('/projects')}>Projects</button><button type="button" onClick={() => navigate('/contact')}>Contact</button><button type="button" onClick={() => navigate('/privacy')}>Privacy</button></div><small>© 2026 Arovix Studio</small></footer>
+}

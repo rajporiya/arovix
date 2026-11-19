@@ -1,0 +1,28 @@
+.page.contact-page h1 { font-size: clamp(3rem, 6vw, 5.5rem); letter-spacing: -0.09em; max-width: 640px; }
+
+@media (min-width: 969px) {
+  .page.contact-page {
+    display: flex;
+    flex-direction: column;
+    min-height: auto;
+    padding: 4rem 6vw 3rem;
+  }
+  .page.contact-page .page-hero {
+    min-height: 330px;
+  }
+  .page.contact-page .form {
+    margin-top: 2rem;
+  }
+  .page.contact-page .page-hero-image {
+    align-self: center;
+    justify-self: center;
+    margin-inline: auto;
+  }
+}
+.form-success { color: #4b9e73 !important; }.form-error { color: #b25b69 !important; }
+.form-notice { animation: contact-form-in .4s cubic-bezier(.22,1,.36,1) both; border-radius: 14px; display: flex; flex-direction: column; gap: .18rem; margin: .35rem 0 0; padding: .85rem 1.1rem; }
+.form-notice b { font-size: .78rem; font-weight: 600; letter-spacing: .01em; }
+.form-notice span { font-size: .76rem; line-height: 1.55; opacity: .88; }
+.form-notice-success { background: #edf9f1; border: 1px solid #c6e9d3; color: #2c6a48; }
+.form-notice-info { background: #f4f1ff; border: 1px solid #ddd5ff; color: #4c4290; }
+.form-notice-error { background: #fdf0f2; border: 1px solid #f2ccd3; color: #8c3847; }

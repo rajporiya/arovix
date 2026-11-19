@@ -1,0 +1,5 @@
+import { useState } from 'react'
+import type { FormEvent } from 'react'
+import { API_URL } from '../../lib/api'
+import { PageShell } from '../../components/shared/PageShell'
+export function LoginPage({ navigate }: { navigate: (path: string) => void }) { const [message, setMessage] = useState(''); const submit = async (event: FormEvent<HTMLFormElement>) => { event.preventDefault(); setMessage('Signing in…'); const response = await fetch(`${API_URL}/api/v1/auth/login`, { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget))) }); if (response.ok) navigate('/admin'); else setMessage('Invalid email or password.') }; return <PageShell title={<>Welcome<br /><i>back.</i></>} intro="Sign in to the Arovix content workspace."><form className="form small-form" onSubmit={submit}><label>Email<input name="email" type="email" required /></label><label>Password<input name="password" type="password" required minLength={8} /></label><button className="button button-dark" type="submit">Sign in ↗</button><p>{message}</p></form></PageShell> }
